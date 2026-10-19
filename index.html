@@ -118,7 +118,7 @@ body:not(.can-edit) .edit-only { display: none; }
     <h2>Add photo</h2>
     <input id="photoInput" type="file" accept="image/*" multiple>
     <button id="addPhoto" class="go" type="button">Choose photo</button>
-    <p class="hint" id="photoHint">Or drag a photo onto the blue screen.</p>
+    <p class="hint" id="photoHint">Or drag a photo onto the screen.</p>
   </section>
 
   <section class="sec edit-only">
@@ -145,7 +145,7 @@ body:not(.can-edit) .edit-only { display: none; }
       <button class="sm grow" type="button" data-bg="magenta">Magenta</button>
       <input id="bgColor" type="color" value="#9fd8f5" title="Any color" aria-label="Background color">
     </div>
-    <p class="hint">For OBS Color Key, pick Magenta and set the key color to <b>#FF00FF</b>. To make OBS always open on magenta, add <b>?bg=magenta</b> to the end of the link.</p>
+    <p class="hint">For OBS, add <b>?obs</b> to the end of the link. The background turns see-through and the panel hides, so you don't need a color key.</p>
   </section>
 </aside>
 
@@ -344,7 +344,7 @@ body:not(.can-edit) .edit-only { display: none; }
           const d = Object.assign(base, { dataUrl: await blobToDataUrl(blob) });
           upsert(id, d); select(id); await store.add(id, d);
         }
-        $('photoHint').textContent = 'Or drag a photo onto the blue screen.';
+        $('photoHint').textContent = 'Or drag a photo onto the screen.';
       } catch (e) {
         $('photoHint').textContent = e && e.code === 'too_large' ? 'That photo is too big. Try a smaller one.'
           : e && e.code === 'rate_limited' ? 'Too many uploads at once. Wait a moment and try again.'
@@ -394,7 +394,7 @@ body:not(.can-edit) .edit-only { display: none; }
   // ---------- shared store ----------
   async function start() {
     setCanEdit(true);
-    $('photoHint').textContent = 'Or drag a photo onto the blue screen.';
+    $('photoHint').textContent = 'Or drag a photo onto the screen.';
     const cfg = window.SUPABASE_CONFIG;
     if (!cfg || !cfg.url || !cfg.key || !window.supabase) {
       store = localStore();
@@ -441,9 +441,10 @@ body:not(.can-edit) .edit-only { display: none; }
   const BG = { blue: '#9fd8f5', green: '#00ff00', magenta: '#ff00ff' };
   function setBg(v, remember) {
     const color = BG[v] || v;
-    if (!/^#[0-9a-fA-F]{6}$/.test(color)) return;
+    if (color !== 'transparent' && !/^#[0-9a-fA-F]{6}$/.test(color)) return;
+    document.documentElement.style.background = color === 'transparent' ? 'transparent' : '';
     document.body.style.background = color; stage.style.background = color;
-    $('bgColor').value = color.toLowerCase();
+    if (color !== 'transparent') $('bgColor').value = color.toLowerCase();
     document.querySelectorAll('[data-bg]').forEach(b => b.classList.toggle('on', BG[b.dataset.bg] === color.toLowerCase()));
     if (remember) { try { localStorage.setItem('blue-stage-bg', color); } catch (e) {} }
   }
@@ -452,6 +453,9 @@ body:not(.can-edit) .edit-only { display: none; }
   (() => {
     let q = null;
     try { q = new URLSearchParams(location.search).get('bg'); } catch (e) {}
+    let obs = false;
+    try { obs = new URLSearchParams(location.search).has('obs'); } catch (e) {}
+    if (obs) { setBg('transparent', false); toggle(true); return; }
     if (q) { q = q.trim().toLowerCase(); if (/^[0-9a-f]{6}$/.test(q)) q = '#' + q; setBg(q, false); return; }
     let saved = null; try { saved = localStorage.getItem('blue-stage-bg'); } catch (e) {}
     setBg(saved || 'blue', false);
