@@ -31,7 +31,7 @@ body.can-edit .item { cursor: grab; }
 .item.dragging { cursor: grabbing; }
 .item.selected { border-color: rgba(30,39,46,.55); }
 body.clean .item.selected { border-color: transparent; }
-.item.text { font-family: var(--mc); text-shadow: .1em .1em 0 rgba(0,0,0,.33); white-space: pre-wrap; width: max-content; max-width: 95%; text-align: center; line-height: 1.15; padding: .1em .2em; color: #fff; }
+.item.text { font-family: var(--mc); text-shadow: .1em .1em 0 #2b3540; white-space: pre-wrap; width: max-content; max-width: 95%; text-align: center; line-height: 1.15; padding: .1em .2em; color: #fff; }
 .item.text[contenteditable="true"] { cursor: text; user-select: text; border-color: var(--gold); outline: none; }
 .item.photo img { display: block; width: 100%; height: auto; max-width: none; pointer-events: none; }
 .item.photo .missing { aspect-ratio: 4 / 3; background: rgba(30,39,46,.15); display: grid; place-items: center; color: rgba(30,39,46,.6); font: 14px var(--ui); }
@@ -75,6 +75,7 @@ button.sm { padding: 5px 9px; font-size: 12px; }
 button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
 .hint { margin: 0; color: var(--muted); font-size: 12px; }
 .note { margin: 0; font-size: 12px; color: #12191e; background: var(--gold); padding: 8px 10px; }
+.bg-row button.on { outline: 2px solid var(--gold); outline-offset: 1px; }
 #drop.over { outline: 2px dashed var(--gold); outline-offset: -6px; }
 body:not(.can-edit) .edit-only { display: none; }
 
@@ -135,6 +136,16 @@ body:not(.can-edit) .edit-only { display: none; }
       <button id="front" class="sm grow" type="button" disabled>Bring to front</button>
       <button id="del" class="sm stop" type="button" disabled>Delete</button>
     </div>
+  </section>
+  <section class="sec">
+    <h2>Background</h2>
+    <div class="row bg-row">
+      <button class="sm grow" type="button" data-bg="blue">Light blue</button>
+      <button class="sm grow" type="button" data-bg="green">Green</button>
+      <button class="sm grow" type="button" data-bg="magenta">Magenta</button>
+      <input id="bgColor" type="color" value="#9fd8f5" title="Any color" aria-label="Background color">
+    </div>
+    <p class="hint">For OBS Color Key, pick Magenta and set the key color to <b>#FF00FF</b>. To make OBS always open on magenta, add <b>?bg=magenta</b> to the end of the link.</p>
   </section>
 </aside>
 
@@ -425,6 +436,26 @@ body:not(.can-edit) .edit-only { display: none; }
     if (error) { setWho(false, 'Can\'t load the screen: ' + error.message); return; }
     (data || []).forEach(r => incoming(r.id, r.data));
   }
+
+  // ---------- background (each screen picks its own, so OBS can use a key color) ----------
+  const BG = { blue: '#9fd8f5', green: '#00ff00', magenta: '#ff00ff' };
+  function setBg(v, remember) {
+    const color = BG[v] || v;
+    if (!/^#[0-9a-fA-F]{6}$/.test(color)) return;
+    document.body.style.background = color; stage.style.background = color;
+    $('bgColor').value = color.toLowerCase();
+    document.querySelectorAll('[data-bg]').forEach(b => b.classList.toggle('on', BG[b.dataset.bg] === color.toLowerCase()));
+    if (remember) { try { localStorage.setItem('blue-stage-bg', color); } catch (e) {} }
+  }
+  document.querySelectorAll('[data-bg]').forEach(b => b.onclick = () => setBg(b.dataset.bg, true));
+  $('bgColor').addEventListener('input', e => setBg(e.target.value, true));
+  (() => {
+    let q = null;
+    try { q = new URLSearchParams(location.search).get('bg'); } catch (e) {}
+    if (q) { q = q.trim().toLowerCase(); if (/^[0-9a-f]{6}$/.test(q)) q = '#' + q; setBg(q, false); return; }
+    let saved = null; try { saved = localStorage.getItem('blue-stage-bg'); } catch (e) {}
+    setBg(saved || 'blue', false);
+  })();
 
   select(null);
   start();
