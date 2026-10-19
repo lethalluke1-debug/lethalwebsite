@@ -25,13 +25,18 @@ html, body { height: 100%; margin: 0; }
 body { background: var(--blue); color: var(--ink); font: 14px/1.4 var(--ui); display: flex; overflow: hidden; }
 
 #stage { position: relative; flex: 1; min-width: 0; height: 100%; background: var(--blue); overflow: hidden; }
-.item { position: absolute; transform: translate(-50%, -50%); cursor: grab; user-select: none; touch-action: none; border: 2px dashed transparent; }
+.item { position: absolute; transform: translate(-50%, -50%); user-select: none; touch-action: none; border: 2px dashed transparent; }
+body.can-edit .item { cursor: grab; }
 .item.dragging { cursor: grabbing; }
 .item.selected { border-color: rgba(30,39,46,.55); }
 body.clean .item.selected { border-color: transparent; }
 .item.text { font-family: var(--mc); text-shadow: .1em .1em 0 rgba(0,0,0,.33); white-space: pre-wrap; width: max-content; max-width: 95%; text-align: center; line-height: 1.15; padding: .1em .2em; color: #fff; }
 .item.text[contenteditable="true"] { cursor: text; user-select: text; border-color: var(--gold); outline: none; }
 .item.photo img { display: block; width: 100%; height: auto; max-width: none; pointer-events: none; }
+.item.photo .missing { aspect-ratio: 4 / 3; background: rgba(30,39,46,.15); display: grid; place-items: center; color: rgba(30,39,46,.6); font: 14px var(--ui); }
+
+#empty { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font: clamp(18px, 2.4vw, 30px) var(--mc); color: rgba(255,255,255,.85); text-shadow: .1em .1em 0 rgba(0,0,0,.2); text-align: center; padding-inline: 24px; }
+body.clean #empty { display: none; }
 
 #showPanel { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: 12px; display: none; opacity: 0; }
 body.clean #showPanel { display: block; }
@@ -39,8 +44,12 @@ body.clean #showPanel { display: block; }
 
 #panel { width: 320px; flex: none; height: 100%; overflow-y: auto; background: var(--panel); border-left: 4px solid #11181d; }
 body.clean #panel { display: none; }
-.head { padding-block: 14px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--panel-2); border-bottom: 2px solid #11181d; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.head { padding-block: 14px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--panel-2); border-bottom: 2px solid #11181d; display: flex; flex-direction: column; gap: 6px; }
+.head .row { justify-content: space-between; }
 .head h1 { margin: 0; font: 20px var(--mc); text-shadow: 2px 2px 0 #000; }
+#who { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+#who .dot { width: 9px; height: 9px; background: #59656e; border: 1px solid #000; flex: none; }
+#who .dot.on { background: var(--green); }
 .sec { padding-block: 14px 18px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 10px; border-bottom: 2px solid #11181d; }
 .sec h2 { margin: 0; font: 15px var(--mc); text-shadow: 2px 2px 0 #000; font-weight: normal; }
 .row { display: flex; gap: 8px; align-items: center; }
@@ -64,7 +73,9 @@ button.stop { background: var(--red); }
 button.sm { padding: 5px 9px; font-size: 12px; }
 button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
 .hint { margin: 0; color: var(--muted); font-size: 12px; }
+.note { margin: 0; font-size: 12px; color: #12191e; background: var(--gold); padding: 8px 10px; }
 #drop.over { outline: 2px dashed var(--gold); outline-offset: -6px; }
+body:not(.can-edit) .edit-only { display: none; }
 
 @media (max-width: 700px) {
   body { flex-direction: column; overflow: auto; }
@@ -75,16 +86,24 @@ button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
 
 </head><body>
 <main id="stage" aria-label="Stage">
+  <div id="empty">Nothing here yet.<br>Add text or a photo from the panel.</div>
   <button id="showPanel" type="button">Show panel</button>
 </main>
 
 <aside id="panel">
   <div class="head">
-    <h1>Blue Stage</h1>
-    <button id="hideBtn" class="sm" type="button" title="Hide the panel. Press H to bring it back.">Hide (H)</button>
+    <div class="row">
+      <h1>Blue Stage</h1>
+      <button id="hideBtn" class="sm" type="button" title="Hide the panel. Press H to bring it back.">Hide (H)</button>
+    </div>
+    <div id="who"><span class="dot" id="liveDot"></span><span id="whoText">Connecting…</span></div>
   </div>
 
-  <section class="sec">
+  <section class="sec" id="viewOnly" hidden>
+    <p class="note">This screen is view only.</p>
+  </section>
+
+  <section class="sec edit-only">
     <h2>Add text</h2>
     <textarea id="newText" aria-label="Text to add">Hello!</textarea>
     <div class="row">
@@ -93,14 +112,14 @@ button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
     </div>
   </section>
 
-  <section class="sec" id="drop">
+  <section class="sec edit-only" id="drop">
     <h2>Add photo</h2>
     <input id="photoInput" type="file" accept="image/*" multiple>
     <button id="addPhoto" class="go" type="button">Choose photo</button>
-    <p class="hint">Or drag a photo onto the blue screen.</p>
+    <p class="hint" id="photoHint">Or drag a photo onto the blue screen.</p>
   </section>
 
-  <section class="sec">
+  <section class="sec edit-only">
     <h2>Selected</h2>
     <p class="hint" id="selHint">Click something on the screen to select it. Drag to move. Double-click text to edit it.</p>
     <label>Size <span class="val" id="sizeVal"></span>
@@ -110,130 +129,225 @@ button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
       <button id="smaller" class="sm grow" type="button" disabled>Smaller</button>
       <button id="bigger" class="sm grow" type="button" disabled>Bigger</button>
       <input id="selColor" type="color" value="#ffffff" disabled title="Text color" aria-label="Selected text color">
+    </div>
+    <div class="row">
+      <button id="front" class="sm grow" type="button" disabled>Bring to front</button>
       <button id="del" class="sm stop" type="button" disabled>Delete</button>
     </div>
   </section>
 </aside>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
   const stage = $('stage');
-  const KEY = 'blue-stage-v1';
-  let items = [];
-  try { items = JSON.parse(localStorage.getItem(KEY) || 'null') || []; } catch (e) { items = []; }
-  if (!items.length) items = [{ id: 'a', type: 'text', text: 'Hello!', x: 50, y: 40, size: 72, color: '#ffffff' }];
-  const els = new Map();
+  const items = new Map();       // id -> data
+  const els = new Map();         // id -> element
   let selected = null;
+  let busy = null;               // id being dragged or edited here; ignore remote updates to it
+  let canEdit = true;
+  let store = null;              // set below: shared (db) or this-screen-only
+  let room = null, assets = null;
 
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(items)); }
-    catch (e) { try { localStorage.setItem(KEY, JSON.stringify(items.filter(i => i.type === 'text'))); } catch (e2) {} }
+  // ---------- rendering ----------
+  function photoSrc(d) { return d.photo ? '/_blob/' + d.photo : (d.dataUrl || ''); }
+  function applyData(id) {
+    const d = items.get(id), el = els.get(id);
+    el.style.left = d.x + '%'; el.style.top = d.y + '%';
+    el.style.zIndex = String(Math.floor((d.z || 0) / 1000) % 1e9);
+    if (d.type === 'text') {
+      if (!el.isContentEditable) el.textContent = d.text;
+      el.style.color = d.color || '#ffffff';
+      el.style.fontSize = d.size + 'px';
+    } else {
+      el.style.width = (d.size * 4) + 'px';
+      const img = el.querySelector('img'), src = photoSrc(d);
+      if (img && img.getAttribute('src') !== src) img.src = src;
+    }
+  }
+  function upsert(id, d) {
+    items.set(id, d);
+    if (!els.has(id)) build(id, d.type);
+    if (busy !== id) applyData(id);
+    $('empty').hidden = items.size > 0;
+    if (selected === id) select(id);
+  }
+  function drop(id) {
+    items.delete(id);
+    const el = els.get(id); if (el) el.remove(); els.delete(id);
+    if (selected === id) select(null);
+    $('empty').hidden = items.size > 0;
   }
 
-  function applySize(it) {
-    const el = els.get(it.id);
-    if (it.type === 'text') el.style.fontSize = it.size + 'px';
-    else el.style.width = (it.size * 4) + 'px';
-  }
-
-  function render(it) {
+  function build(id, type) {
     const el = document.createElement('div');
-    el.className = 'item ' + it.type;
+    el.className = 'item ' + type;
     el.tabIndex = 0;
-    el.style.left = it.x + '%'; el.style.top = it.y + '%';
-    if (it.type === 'text') { el.textContent = it.text; el.style.color = it.color; }
-    else { const img = document.createElement('img'); img.src = it.src; img.alt = ''; el.appendChild(img); }
+    if (type === 'photo') {
+      const img = document.createElement('img'); img.alt = '';
+      img.onerror = () => { const m = document.createElement('div'); m.className = 'missing'; m.textContent = 'Photo unavailable'; img.replaceWith(m); };
+      el.appendChild(img);
+    }
     stage.insertBefore(el, $('showPanel'));
-    els.set(it.id, el);
-    applySize(it);
+    els.set(id, el);
 
-    let start = null;
+    let start = null, lastEmit = 0;
     el.addEventListener('pointerdown', e => {
-      select(it.id);
+      if (!canEdit) return;
+      select(id);
       if (el.isContentEditable) return;
-      const r = stage.getBoundingClientRect();
-      start = { px: e.clientX, py: e.clientY, x: it.x, y: it.y, w: r.width, h: r.height };
+      const d = items.get(id), r = stage.getBoundingClientRect();
+      start = { px: e.clientX, py: e.clientY, x: d.x, y: d.y, w: r.width, h: r.height, moved: false };
+      busy = id;
       el.setPointerCapture(e.pointerId); el.classList.add('dragging');
     });
     el.addEventListener('pointermove', e => {
       if (!start) return;
-      it.x = Math.max(0, Math.min(100, start.x + (e.clientX - start.px) / start.w * 100));
-      it.y = Math.max(0, Math.min(100, start.y + (e.clientY - start.py) / start.h * 100));
-      el.style.left = it.x + '%'; el.style.top = it.y + '%';
+      const d = items.get(id);
+      const x = Math.max(0, Math.min(100, start.x + (e.clientX - start.px) / start.w * 100));
+      const y = Math.max(0, Math.min(100, start.y + (e.clientY - start.py) / start.h * 100));
+      start.moved = true;
+      items.set(id, Object.assign({}, d, { x, y }));
+      el.style.left = x + '%'; el.style.top = y + '%';
+      const now = Date.now();
+      if (store && store.liveMove && now - lastEmit > 100) { lastEmit = now; store.patch(id, { x, y }); }
     });
-    const end = () => { if (start) { start = null; el.classList.remove('dragging'); save(); } };
+    const end = () => {
+      if (!start) return;
+      const moved = start.moved; start = null; el.classList.remove('dragging');
+      if (moved) { const d = items.get(id); store.patch(id, { x: d.x, y: d.y }).finally(() => { if (busy === id) busy = null; }); }
+      else if (busy === id) busy = null;
+    };
     el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
-    el.addEventListener('focus', () => select(it.id));
+    el.addEventListener('focus', () => { if (canEdit) select(id); });
 
-    if (it.type === 'text') {
+    if (type === 'text') {
       el.addEventListener('dblclick', () => {
+        if (!canEdit) return;
+        busy = id;
         el.contentEditable = 'true'; el.focus();
         const r = document.createRange(); r.selectNodeContents(el);
         const s = getSelection(); s.removeAllRanges(); s.addRange(r);
       });
       el.addEventListener('blur', () => {
         if (!el.isContentEditable) return;
-        el.contentEditable = 'false'; it.text = el.innerText.trim() || ' '; el.textContent = it.text; save();
+        el.contentEditable = 'false';
+        const text = el.innerText.trim() || ' ';
+        items.set(id, Object.assign({}, items.get(id), { text }));
+        el.textContent = text;
+        store.patch(id, { text }).finally(() => { if (busy === id) busy = null; });
       });
       el.addEventListener('keydown', e => { if (el.isContentEditable && e.key === 'Escape') el.blur(); });
     }
   }
 
-  function current() { return items.find(i => i.id === selected); }
+  // ---------- selection + controls ----------
+  function current() { return selected && items.get(selected); }
   function select(id) {
-    selected = id;
-    els.forEach((el, k) => el.classList.toggle('selected', k === id));
-    const it = current();
-    ['size', 'smaller', 'bigger', 'del'].forEach(k => $(k).disabled = !it);
-    $('selColor').disabled = !it || it.type !== 'text';
-    if (it) {
-      $('size').value = it.size; $('sizeVal').textContent = it.type === 'text' ? it.size + 'px' : (it.size * 4) + 'px wide';
-      if (it.type === 'text') $('selColor').value = it.color;
-      $('selHint').textContent = it.type === 'text' ? 'Text selected. Double-click it to edit.' : 'Photo selected.';
+    selected = id && items.has(id) ? id : null;
+    els.forEach((el, k) => el.classList.toggle('selected', k === selected));
+    const d = current();
+    ['size', 'smaller', 'bigger', 'del', 'front'].forEach(k => $(k).disabled = !d);
+    $('selColor').disabled = !d || d.type !== 'text';
+    if (d) {
+      $('size').value = d.size;
+      $('sizeVal').textContent = d.type === 'text' ? d.size + 'px' : (d.size * 4) + 'px wide';
+      if (d.type === 'text') $('selColor').value = d.color || '#ffffff';
+      $('selHint').textContent = d.type === 'text' ? 'Text selected. Double-click it to edit.' : 'Photo selected.';
     } else {
       $('sizeVal').textContent = '';
       $('selHint').textContent = 'Click something on the screen to select it. Drag to move. Double-click text to edit it.';
     }
   }
-  function setSize(v) {
-    const it = current(); if (!it) return;
-    it.size = Math.max(10, Math.min(400, v)); applySize(it); select(it.id); save();
+  // Local change now, shared write after a short pause.
+  const pending = new Map();
+  function change(fields) {
+    const d = current(); if (!d) return;
+    const id = selected;
+    items.set(id, Object.assign({}, d, fields)); applyData(id); select(id);
+    const p = Object.assign(pending.get(id) || {}, fields); pending.set(id, p);
+    clearTimeout(p._t);
+    p._t = setTimeout(() => { const f = Object.assign({}, p); delete f._t; pending.delete(id); store.patch(id, f); }, 300);
   }
+  const clampSize = v => Math.max(10, Math.min(400, v));
+  $('size').addEventListener('input', e => change({ size: clampSize(+e.target.value) }));
+  $('smaller').onclick = () => change({ size: clampSize(current().size - 8) });
+  $('bigger').onclick = () => change({ size: clampSize(current().size + 8) });
+  $('selColor').addEventListener('input', e => change({ color: e.target.value }));
+  $('front').onclick = () => change({ z: Date.now() });
   function remove() {
-    const it = current(); if (!it) return;
-    els.get(it.id).remove(); els.delete(it.id); items = items.filter(i => i !== it); select(null); save();
+    const d = current(); if (!d) return;
+    const id = selected;
+    drop(id); store.remove(id, d);
   }
-
-  $('size').addEventListener('input', e => setSize(+e.target.value));
-  $('smaller').onclick = () => setSize(current().size - 8);
-  $('bigger').onclick = () => setSize(current().size + 8);
-  $('selColor').addEventListener('input', e => { const it = current(); if (!it) return; it.color = e.target.value; els.get(it.id).style.color = it.color; save(); });
   $('del').onclick = remove;
-  stage.addEventListener('pointerdown', e => { if (e.target === stage) select(null); });
+  stage.addEventListener('pointerdown', e => { if (e.target === stage || e.target.id === 'empty') select(null); });
 
+  function newId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   $('addText').onclick = () => {
     const text = $('newText').value.trim(); if (!text) return;
-    const it = { id: 't' + Date.now(), type: 'text', text, x: 50, y: 50, size: 64, color: $('newColor').value };
-    items.push(it); render(it); select(it.id); save();
+    const id = newId('t');
+    const d = { type: 'text', text, x: 45 + Math.random() * 10, y: 45 + Math.random() * 10, size: 64, color: $('newColor').value, z: Date.now() };
+    upsert(id, d); select(id); store.add(id, d);
   };
 
-  function addFiles(files) {
-    [...files].filter(f => f.type.startsWith('image/')).forEach((f, n) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const it = { id: 'p' + Date.now() + n, type: 'photo', src: reader.result, x: 50 + n * 3, y: 50 + n * 3, size: 75 };
-        items.push(it); render(it); select(it.id); save();
+  // ---------- photos ----------
+  function shrink(file, maxSide, quality) {
+    return new Promise((resolve, reject) => {
+      const img = new Image(), url = URL.createObjectURL(file);
+      img.onload = () => {
+        const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        const type = file.type === 'image/png' && !assets ? 'image/jpeg' : (file.type === 'image/png' ? 'image/png' : 'image/jpeg');
+        c.toBlob(b => b ? resolve(b) : reject(new Error('shrink failed')), type, quality);
       };
-      reader.readAsDataURL(f);
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('not an image')); };
+      img.src = url;
     });
+  }
+  const blobToDataUrl = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
+
+  async function addFiles(files) {
+    if (!canEdit) return;
+    const list = [...files].filter(f => f.type.startsWith('image/'));
+    for (let n = 0; n < list.length; n++) {
+      const f = list[n];
+      $('photoHint').textContent = 'Uploading ' + f.name + '…';
+      const id = newId('p');
+      const base = { type: 'photo', x: 50 + n * 3, y: 50 + n * 3, size: 75, z: Date.now() };
+      try {
+        if (assets) {
+          const blob = f.type === 'image/gif' ? f : await shrink(f, 2000, .88);
+          const res = await assets.upload(blob, { type: blob.type });
+          const d = Object.assign(base, { photo: res.id });
+          upsert(id, d); select(id); await store.add(id, d);
+        } else {
+          // No shared file storage in this view: keep a small copy inside the item itself.
+          const blob = await shrink(f, 900, .8);
+          const d = Object.assign(base, { dataUrl: await blobToDataUrl(blob) });
+          upsert(id, d); select(id); await store.add(id, d);
+        }
+        $('photoHint').textContent = 'Or drag a photo onto the blue screen.';
+      } catch (e) {
+        $('photoHint').textContent = e && e.code === 'too_large' ? 'That photo is too big. Try a smaller one.'
+          : e && e.code === 'rate_limited' ? 'Too many uploads at once. Wait a moment and try again.'
+          : 'That photo could not be added. Try a JPG or PNG.';
+      }
+    }
   }
   $('addPhoto').onclick = () => $('photoInput').click();
   $('photoInput').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
-  ['dragover', 'dragenter'].forEach(t => document.addEventListener(t, e => { e.preventDefault(); $('drop').classList.add('over'); }));
+  ['dragover', 'dragenter'].forEach(t => document.addEventListener(t, e => { e.preventDefault(); if (canEdit) $('drop').classList.add('over'); }));
   ['dragleave', 'drop'].forEach(t => document.addEventListener(t, e => { e.preventDefault(); $('drop').classList.remove('over'); }));
   document.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files); });
 
+  // ---------- panel ----------
   const toggle = force => document.body.classList.toggle('clean', force);
   $('hideBtn').onclick = () => toggle(true);
   $('showPanel').onclick = () => toggle(false);
@@ -241,11 +355,74 @@ button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
     const t = e.target;
     if (t.isContentEditable || /INPUT|TEXTAREA/.test(t.tagName)) return;
     if (e.key === 'h' || e.key === 'H') toggle();
-    if ((e.key === 'Delete' || e.key === 'Backspace') && selected) remove();
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selected && canEdit) remove();
   });
 
-  items.forEach(render);
+  function setWho(live, text) { $('liveDot').className = 'dot' + (live ? ' on' : ''); $('whoText').textContent = text; }
+  function setCanEdit(v) {
+    canEdit = v;
+    document.body.classList.toggle('can-edit', v);
+    $('viewOnly').hidden = v;
+    if (!v) select(null);
+  }
+
+  // ---------- this-screen-only store (used when shared saving isn't available) ----------
+  function localStore() {
+    const KEY = 'blue-stage-github-local-v1';
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+    Object.entries(saved).forEach(([id, d]) => upsert(id, d));
+    const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(items))); } catch (e) {} };
+    return {
+      add: async () => persist(),
+      patch: async () => persist(),
+      remove: async () => persist()
+    };
+  }
+
+  // ---------- shared store ----------
+  async function start() {
+    setCanEdit(true);
+    $('photoHint').textContent = 'Or drag a photo onto the blue screen.';
+    const cfg = window.FIREBASE_CONFIG;
+    if (!cfg || !cfg.databaseURL || !window.firebase) {
+      store = localStore();
+      setWho(false, 'Only on this screen (not connected to Firebase yet)');
+      return;
+    }
+    let ref;
+    try {
+      firebase.initializeApp(cfg);
+      ref = firebase.database().ref('items');
+    } catch (e) {
+      store = localStore();
+      setWho(false, 'Firebase settings are wrong. Showing this screen only.');
+      return;
+    }
+    const onWriteError = () => setWho(false, 'Could not save. Check the Firebase database rules.');
+    store = {
+      liveMove: true,
+      add: (id, d) => ref.child(id).set(d).catch(onWriteError),
+      patch: (id, f) => ref.child(id).update(f).catch(onWriteError),
+      remove: id => ref.child(id).remove().catch(onWriteError)
+    };
+    const incoming = snap => {
+      const d = Object.assign({}, snap.val());
+      if (!d || (d.type !== 'text' && d.type !== 'photo')) return;
+      const p = pending.get(snap.key);
+      if (p) Object.keys(p).forEach(k => { if (k !== '_t') d[k] = p[k]; });
+      upsert(snap.key, d);
+    };
+    ref.on('child_added', incoming, () => setWho(false, 'Can\'t read the database. Check the Firebase rules.'));
+    ref.on('child_changed', incoming);
+    ref.on('child_removed', snap => drop(snap.key));
+    firebase.database().ref('.info/connected').on('value', s => {
+      setWho(!!s.val(), s.val() ? 'Live: changes show for everyone' : 'Reconnecting…');
+    });
+  }
+
   select(null);
+  start();
 })();
 </script>
 
