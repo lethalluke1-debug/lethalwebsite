@@ -137,9 +137,8 @@ body:not(.can-edit) .edit-only { display: none; }
   </section>
 </aside>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="supabase-config.js"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -384,41 +383,46 @@ body:not(.can-edit) .edit-only { display: none; }
   async function start() {
     setCanEdit(true);
     $('photoHint').textContent = 'Or drag a photo onto the blue screen.';
-    const cfg = window.FIREBASE_CONFIG;
-    if (!cfg || !cfg.databaseURL || !window.firebase) {
+    const cfg = window.SUPABASE_CONFIG;
+    if (!cfg || !cfg.url || !cfg.key || !window.supabase) {
       store = localStore();
-      setWho(false, 'Only on this screen (not connected to Firebase yet)');
+      setWho(false, 'Only on this screen (not connected yet)');
       return;
     }
-    let ref;
-    try {
-      firebase.initializeApp(cfg);
-      ref = firebase.database().ref('items');
-    } catch (e) {
-      store = localStore();
-      setWho(false, 'Firebase settings are wrong. Showing this screen only.');
-      return;
-    }
-    const onWriteError = () => setWho(false, 'Could not save. Check the Firebase database rules.');
+    let sb;
+    try { sb = window.supabase.createClient(cfg.url, cfg.key); }
+    catch (e) { store = localStore(); setWho(false, 'Connection settings are wrong. Showing this screen only.'); return; }
+
+    const table = () => sb.from('items');
+    const report = res => { if (res && res.error) setWho(false, 'Could not save: ' + res.error.message); return res; };
+    const full = id => { const d = Object.assign({}, items.get(id)); return d; };
     store = {
       liveMove: true,
-      add: (id, d) => ref.child(id).set(d).catch(onWriteError),
-      patch: (id, f) => ref.child(id).update(f).catch(onWriteError),
-      remove: id => ref.child(id).remove().catch(onWriteError)
+      add: (id, d) => table().upsert({ id, data: d }).then(report),
+      patch: id => items.has(id) ? table().upsert({ id, data: full(id) }).then(report) : Promise.resolve(),
+      remove: id => table().delete().eq('id', id).then(report)
     };
-    const incoming = snap => {
-      const d = Object.assign({}, snap.val());
-      if (!d || (d.type !== 'text' && d.type !== 'photo')) return;
-      const p = pending.get(snap.key);
+    const incoming = (id, data) => {
+      if (!id || !data || (data.type !== 'text' && data.type !== 'photo')) return;
+      const d = Object.assign({}, data);
+      const p = pending.get(id);
       if (p) Object.keys(p).forEach(k => { if (k !== '_t') d[k] = p[k]; });
-      upsert(snap.key, d);
+      upsert(id, d);
     };
-    ref.on('child_added', incoming, () => setWho(false, 'Can\'t read the database. Check the Firebase rules.'));
-    ref.on('child_changed', incoming);
-    ref.on('child_removed', snap => drop(snap.key));
-    firebase.database().ref('.info/connected').on('value', s => {
-      setWho(!!s.val(), s.val() ? 'Live: changes show for everyone' : 'Reconnecting…');
-    });
+
+    sb.channel('items-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, p => {
+        if (p.eventType === 'DELETE') { if (p.old && p.old.id) drop(p.old.id); }
+        else if (p.new) incoming(p.new.id, p.new.data);
+      })
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') setWho(true, 'Live: changes show for everyone');
+        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setWho(false, 'Reconnecting…');
+      });
+
+    const { data, error } = await table().select('id,data');
+    if (error) { setWho(false, 'Can\'t load the screen: ' + error.message); return; }
+    (data || []).forEach(r => incoming(r.id, r.data));
   }
 
   select(null);
