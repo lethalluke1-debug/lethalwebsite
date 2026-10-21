@@ -129,22 +129,23 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     </div>
 
     <div class="card">
-      <div class="plat"><span><span class="sw" style="background:var(--yt)"></span>YouTube</span><span class="status"><span class="dot" id="ytDot"></span><span id="ytStatus">Off</span></span></div>
-      <input id="ytChannel" type="text" placeholder="@yourhandle or a live link" autocomplete="off">
+      <div class="plat"><span><span class="sw" style="background:var(--yt)"></span><span class="sw" style="background:var(--tt)"></span>YouTube + TikTok</span><span class="status"><span class="dot" id="ssDot"></span><span id="ssStatus">Off</span></span></div>
       <div class="row">
-        <input id="ytKey" class="grow" type="password" placeholder="YouTube API key" autocomplete="off">
-        <button id="ytBtn" class="sm go" type="button">Connect</button>
+        <input id="ssSession" class="grow" type="text" placeholder="Social Stream session ID" autocomplete="off">
+        <button id="ssBtn" class="sm go" type="button">Connect</button>
       </div>
-      <p class="hint">You have to be live. Needs a free API key from <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud</a> (turn on "YouTube Data API v3", then Credentials → Create API key).</p>
-    </div>
-
-    <div class="card">
-      <div class="plat"><span><span class="sw" style="background:var(--tt)"></span>TikTok</span><span class="status"><span class="dot" id="ttDot"></span><span id="ttStatus">Off</span></span></div>
-      <div class="row">
-        <input id="ttUrl" class="grow" type="text" value="ws://localhost:21213/" autocomplete="off" aria-label="TikTok helper address">
-        <button id="ttBtn" class="sm go" type="button">Connect</button>
-      </div>
-      <p class="hint">TikTok doesn't let websites read live chat, so open <a href="https://tikfinity.zerody.one/" target="_blank" rel="noopener">TikFinity</a> on your computer while you're live, then press Connect.</p>
+      <p class="hint">Uses the free <a href="https://socialstream.ninja/" target="_blank" rel="noopener">Social Stream Ninja</a> extension. No API key needed.</p>
+      <details>
+        <summary class="hint" style="cursor:pointer">Step by step</summary>
+        <ol class="hint" style="padding-left:18px; margin:8px 0 0; display:flex; flex-direction:column; gap:6px">
+          <li>In Chrome, install <b>Social Stream Ninja</b> from the <a href="https://chromewebstore.google.com/search/social%20stream%20ninja" target="_blank" rel="noopener">Chrome Web Store</a>.</li>
+          <li>Click its icon in the toolbar and turn it <b>on</b>.</li>
+          <li>Copy the <b>session ID</b> it shows and paste it in the box above.</li>
+          <li>In its settings, open <b>Global settings → Mechanics</b> and turn on <b>Enable remote API control of extension</b> and <b>Send chat messages to API server</b>.</li>
+          <li>Go live. For YouTube, open your stream's <b>pop-out chat</b> (the ⋮ menu on the chat → Pop-out chat). For TikTok, open your own <b>tiktok.com live page</b>.</li>
+          <li>Keep those tabs open while you stream, then press <b>Connect</b> here.</li>
+        </ol>
+      </details>
     </div>
   </section>
 
@@ -170,7 +171,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 
   <section class="sec">
     <h2>OBS</h2>
-    <p class="hint">Add a <b>Browser</b> source in OBS and paste this link. It has your settings built in, has a see-through background and hides this panel. Keep it private, since it includes your YouTube key.</p>
+    <p class="hint">Add a <b>Browser</b> source in OBS and paste this link. It has your settings built in, has a see-through background and hides this panel.</p>
     <div id="obsLink"></div>
     <button id="copyObs" class="go" type="button">Copy OBS link</button>
   </section>
@@ -196,9 +197,9 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   const KEY = 'lethal-chat-v1';
   let saved = {};
   if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {} }
-  const S = Object.assign({ twitch: '', yt: '', ytKey: '', tt: 'ws://localhost:21213/', useTt: false, size: 32, max: 12, badges: true, fade: false, bg: '#9fd8f5' }, saved);
+  const S = Object.assign({ twitch: '', ss: '', size: 32, max: 12, badges: true, fade: false, bg: '#9fd8f5' }, saved);
   if (OBS) {
-    ['twitch', 'yt', 'ytKey', 'tt'].forEach(k => { if (params.get(k)) S[k] = params.get(k); });
+    ['twitch', 'ss'].forEach(k => { if (params.get(k)) S[k] = params.get(k); });
     if (params.get('size')) S.size = +params.get('size') || S.size;
     if (params.get('max')) S.max = +params.get('max') || S.max;
     if (params.has('nobadges')) S.badges = false;
@@ -237,16 +238,13 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     const u = new URL(location.href.split('?')[0].split('#')[0]);
     u.searchParams.set('obs', '');
     if (S.twitch) u.searchParams.set('twitch', S.twitch);
-    if (S.yt) u.searchParams.set('yt', S.yt);
-    if (S.ytKey) u.searchParams.set('ytKey', S.ytKey);
-    if (S.tt && S.tt !== 'ws://localhost:21213/') u.searchParams.set('tt', S.tt);
+    if (S.ss) u.searchParams.set('ss', S.ss);
     u.searchParams.set('size', S.size); u.searchParams.set('max', S.max);
     if (!S.badges) u.searchParams.set('nobadges', '');
     if (S.fade) u.searchParams.set('fade', '');
-    if (S.useTt) u.searchParams.set('tiktok', '');
-    return u.toString().replace('obs=&', 'obs&').replace(/obs=$/, 'obs').replace('nobadges=', 'nobadges').replace('fade=', 'fade').replace('tiktok=', 'tiktok');
+    return u.toString().replace('obs=&', 'obs&').replace(/obs=$/, 'obs').replace('nobadges=', 'nobadges').replace('fade=', 'fade');
   }
-  function updateObsLink() { $('obsLink').textContent = obsUrl().replace(/ytKey=[^&]+/, 'ytKey=••••••'); }
+  function updateObsLink() { $('obsLink').textContent = obsUrl(); }
   $('copyObs').onclick = () => {
     const url = obsUrl();
     const done = () => { $('copyObs').textContent = 'Copied!'; setTimeout(() => $('copyObs').textContent = 'Copy OBS link', 1500); };
@@ -306,97 +304,38 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   function twOff() { twOn = false; if (tw) { tw.onclose = null; tw.close(); } setBtn('tw', false); setStatus('tw', '', 'Off'); }
   $('twBtn').onclick = () => twOn ? twOff() : twConnect();
 
-  // ---------- YouTube (Data API v3) ----------
-  let yt = { on: false };
-  const API = 'https://www.googleapis.com/youtube/v3/';
-  async function api(path, key) {
-    const r = await fetch(API + path + '&key=' + encodeURIComponent(key));
-    const j = await r.json();
-    if (j.error) {
-      const reason = (j.error.errors && j.error.errors[0] && j.error.errors[0].reason) || '';
-      if (reason === 'quotaExceeded') throw new Error('Out of YouTube quota for today');
-      if (/keyInvalid|badRequest/.test(reason) || r.status === 400) throw new Error('API key not accepted');
-      throw new Error(String(j.error.message || 'YouTube error').replace(/<[^>]+>/g, '').slice(0, 70));
-    }
-    return j;
-  }
-  async function findLiveVideo(input, key) {
-    input = input.trim();
-    const vid = input.match(/(?:v=|youtu\.be\/|\/live\/|\/shorts\/|\/embed\/)([\w-]{11})/);
-    if (vid) return vid[1];
-    if (/^[\w-]{11}$/.test(input)) return input;
-    let channelId = (input.match(/(UC[\w-]{22})/) || [])[1];
-    if (!channelId) {
-      const handle = (input.match(/@([\w.\-]+)/) || [null, input.replace(/^.*youtube\.com\//, '')])[1];
-      const c = await api('channels?part=id&forHandle=' + encodeURIComponent('@' + handle), key);
-      channelId = c.items && c.items[0] && c.items[0].id;
-      if (!channelId) throw new Error('Couldn\'t find that channel');
-    }
-    const s = await api('search?part=id&type=video&eventType=live&maxResults=1&channelId=' + channelId, key);
-    const id = s.items && s.items[0] && s.items[0].id && s.items[0].id.videoId;
-    if (!id) throw new Error('Not live right now');
-    return id;
-  }
-  async function ytConnect(isRetry) {
-    const key = $('ytKey').value.trim(), input = $('ytChannel').value.trim();
-    if (!input) { setStatus('yt', 'err', 'Type your @handle'); return; }
-    if (!key) { setStatus('yt', 'err', 'Add your API key'); return; }
-    S.yt = input; S.ytKey = key; save();
-    yt = { on: true, key, page: null, first: true, timer: null };
-    setBtn('yt', true); setStatus('yt', 'wait', 'Finding your stream…');
-    try {
-      const videoId = await findLiveVideo(input, key);
-      const v = await api('videos?part=liveStreamingDetails&id=' + videoId, key);
-      const chatId = v.items && v.items[0] && v.items[0].liveStreamingDetails && v.items[0].liveStreamingDetails.activeLiveChatId;
-      if (!chatId) throw new Error('Not live right now');
-      if (!yt.on) return;
-      yt.chatId = chatId; setStatus('yt', 'on', 'Live'); ytPoll();
-    } catch (e) {
-      if (!yt.on) return;
-      setStatus('yt', 'err', e.message + (OBS || isRetry ? ' (trying again soon)' : ''));
-      if (OBS && e.message === 'Not live right now') { yt.timer = setTimeout(() => yt.on && ytConnect(true), 120000); }
-      else { yt.on = false; setBtn('yt', false); }
-    }
-  }
-  async function ytPoll() {
-    if (!yt.on) return;
-    let wait = 6000;
-    try {
-      const j = await api('liveChat/messages?part=snippet,authorDetails&maxResults=200&liveChatId=' + encodeURIComponent(yt.chatId) + (yt.page ? '&pageToken=' + yt.page : ''), yt.key);
-      yt.page = j.nextPageToken;
-      wait = Math.max(j.pollingIntervalMillis || 6000, 6000);
-      if (!yt.first) (j.items || []).forEach(it => {
-        const a = it.authorDetails || {}, s = it.snippet || {};
-        if (s.displayMessage) addMessage({ platform: 'youtube', name: a.displayName || 'viewer', text: s.displayMessage });
-      });
-      yt.first = false; setStatus('yt', 'on', 'Live');
-    } catch (e) {
-      setStatus('yt', 'err', e.message);
-      if (/ended|not found|no longer/i.test(e.message)) { ytOff(); setStatus('yt', 'err', 'Stream ended'); return; }
-      wait = 20000;
-    }
-    if (yt.on) yt.timer = setTimeout(ytPoll, wait);
-  }
-  function ytOff() { yt.on = false; clearTimeout(yt.timer); setBtn('yt', false); setStatus('yt', '', 'Off'); }
-  $('ytBtn').onclick = () => yt.on ? ytOff() : ytConnect();
-
-  // ---------- TikTok (through TikFinity on this computer) ----------
-  let tt = null, ttOn = false;
-  function ttConnect() {
-    const url = $('ttUrl').value.trim() || 'ws://localhost:21213/'; S.tt = url; S.useTt = true; save();
-    ttOn = true; setBtn('tt', true); setStatus('tt', 'wait', 'Connecting…');
-    try { tt = new WebSocket(url); } catch (e) { ttOn = false; setBtn('tt', false); setStatus('tt', 'err', 'That address is wrong'); return; }
-    tt.onopen = () => setStatus('tt', 'on', 'Connected');
-    tt.onmessage = ev => {
+  // ---------- YouTube + TikTok (and more) through Social Stream Ninja ----------
+  let ss = null, ssOn = false;
+  const toText = html => {
+    const doc = new DOMParser().parseFromString('<div>' + String(html || '') + '</div>', 'text/html');
+    doc.querySelectorAll('script,style').forEach(n => n.remove());
+    doc.querySelectorAll('img').forEach(img => img.replaceWith(img.getAttribute('alt') || ''));
+    return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+  };
+  const PLAT = { youtube: 'youtube', youtubeshorts: 'youtube', tiktok: 'tiktok', twitch: 'twitch' };
+  function ssConnect() {
+    const session = $('ssSession').value.trim();
+    if (!session) { setStatus('ss', 'err', 'Paste your session ID'); return; }
+    S.ss = session; save();
+    ssOn = true; setBtn('ss', true); setStatus('ss', 'wait', 'Connecting…');
+    ss = new WebSocket('wss://io.socialstream.ninja');
+    ss.onopen = () => { ss.send(JSON.stringify({ join: session, in: 4, out: 3 })); setStatus('ss', 'on', 'Connected, waiting for chat'); };
+    ss.onmessage = ev => {
       let j; try { j = JSON.parse(ev.data); } catch (e) { return; }
-      if (j.event !== 'chat' || !j.data) return;
-      const d = j.data, u = d.user || {};
-      addMessage({ platform: 'tiktok', name: d.nickname || u.nickname || d.uniqueId || u.uniqueId || 'viewer', text: d.comment });
+      const m = j && j.overlayNinja ? j.overlayNinja : j;
+      if (!m || !m.chatmessage || m.event) return;
+      const type = String(m.type || '').toLowerCase();
+      const platform = PLAT[type];
+      if (!platform) return;
+      if (platform === 'twitch' && twOn) return; // already reading Twitch directly
+      const text = toText(m.chatmessage); if (!text) return;
+      setStatus('ss', 'on', 'Live');
+      addMessage({ platform, name: toText(m.chatname) || 'viewer', color: m.nameColor, text });
     };
-    tt.onclose = () => { if (ttOn) { setStatus('tt', 'err', 'Is TikFinity open? Retrying…'); setTimeout(() => { if (ttOn) ttConnect(); }, 5000); } };
+    ss.onclose = () => { if (ssOn) { setStatus('ss', 'wait', 'Reconnecting…'); setTimeout(() => { if (ssOn) ssConnect(); }, 4000); } };
   }
-  function ttOff() { ttOn = false; S.useTt = false; save(); if (tt) { tt.onclose = null; tt.close(); } setBtn('tt', false); setStatus('tt', '', 'Off'); }
-  $('ttBtn').onclick = () => ttOn ? ttOff() : ttConnect();
+  function ssOff() { ssOn = false; if (ss) { ss.onclose = null; ss.close(); } setBtn('ss', false); setStatus('ss', '', 'Off'); }
+  $('ssBtn').onclick = () => ssOn ? ssOff() : ssConnect();
 
   // ---------- test ----------
   function sendTest() {
@@ -408,15 +347,13 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   $('testMsg').addEventListener('keydown', e => { if (e.key === 'Enter') sendTest(); });
 
   // ---------- start ----------
-  $('twChannel').value = S.twitch; $('ytChannel').value = S.yt; $('ytKey').value = S.ytKey; $('ttUrl').value = S.tt;
+  $('twChannel').value = S.twitch; $('ssSession').value = S.ss;
   $('twChannel').addEventListener('change', e => { S.twitch = e.target.value.trim().toLowerCase().replace(/.*twitch\.tv\//, '').replace(/^[#@]/, '').split(/[/?]/)[0]; save(); });
-  $('ytChannel').addEventListener('change', e => { S.yt = e.target.value.trim(); save(); });
-  $('ytKey').addEventListener('change', e => { S.ytKey = e.target.value.trim(); save(); });
+  $('ssSession').addEventListener('change', e => { S.ss = e.target.value.trim(); save(); });
   applyLook(); updateObsLink();
   if (OBS) {
     if (S.twitch) twConnect();
-    if (S.yt && S.ytKey) ytConnect();
-    if (params.has('tt') || params.has('tiktok')) ttConnect();
+    if (S.ss) ssConnect();
   }
 })();
 </script>
