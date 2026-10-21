@@ -1,13 +1,15 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Blue Stage</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lethal Chat</title>
 <style>
 @font-face { font-family: "MC"; src: url(data:font/ttf;base64,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) format("truetype"); font-display: block; }
 
-/* Layout: plain blue stage fills the screen; small dark panel docked right (H hides it). Single deliberate look, no dark mode. */
+/* Layout: the chat fills the screen; settings panel docked right (H hides it). ?obs = see-through, no panel. */
 :root {
-  --blue: #9fd8f5;
+  --bg: #9fd8f5;
   --panel: #1e272e;
   --panel-2: #29353e;
   --line: #3b4b57;
@@ -16,52 +18,57 @@
   --green: #5aae3c;
   --red: #d65a4f;
   --gold: #f6c945;
+  --twitch: #a970ff;
+  --yt: #ff4e45;
+  --tt: #25f4ee;
+  --test: #c6ced4;
   --mc: "MC", "Courier New", monospace;
   --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --size: 32px;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { height: 100%; margin: 0; }
-body { background: var(--blue); color: var(--ink); font: 14px/1.4 var(--ui); display: flex; overflow: hidden; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.4 var(--ui); display: flex; overflow: hidden; }
 
-#stage { position: relative; flex: 1; min-width: 0; height: 100%; background: var(--blue); overflow: hidden; }
-.item { position: absolute; transform: translate(-50%, -50%); user-select: none; touch-action: none; border: 2px dashed transparent; }
-body.can-edit .item { cursor: grab; }
-.item.dragging { cursor: grabbing; }
-.item.selected { border-color: rgba(30,39,46,.55); }
-body.clean .item.selected { border-color: transparent; }
-.item.text { font-family: var(--mc); text-shadow: .1em .1em 0 #2b3540; white-space: pre-wrap; width: max-content; max-width: 95%; text-align: center; line-height: 1.15; padding: .1em .2em; color: #fff; }
-.item.text[contenteditable="true"] { cursor: text; user-select: text; border-color: var(--gold); outline: none; }
-.item.photo img { display: block; width: 100%; height: auto; max-width: none; pointer-events: none; }
-.item.photo .missing { aspect-ratio: 4 / 3; background: rgba(30,39,46,.15); display: grid; place-items: center; color: rgba(30,39,46,.6); font: 14px var(--ui); }
+/* ---------- chat ---------- */
+#chat { position: relative; flex: 1; min-width: 0; height: 100%; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: 16px; }
+#lines { display: flex; flex-direction: column; gap: .3em; font-family: var(--mc); font-size: var(--size); line-height: 1.2; color: #fff; text-shadow: .1em .1em 0 #2b3540; -webkit-font-smoothing: none; }
+.msg { overflow-wrap: anywhere; animation: pop .18s steps(3) both; }
+.msg.fade { animation: pop .18s steps(3) both, out .6s steps(4) forwards; animation-delay: 0s, var(--life, 30s); }
+.badge { display: inline-block; font-size: .5em; padding: .15em .35em .1em; margin-right: .45em; vertical-align: .3em; color: #11181d; text-shadow: none; border: .12em solid #11181d; }
+.badge.twitch { background: var(--twitch); }
+.badge.youtube { background: var(--yt); }
+.badge.tiktok { background: var(--tt); }
+.badge.test { background: var(--test); }
+.name { margin-right: .3em; }
+.name::after { content: ":"; color: #fff; }
+body.hide-badges .badge { display: none; }
+#empty { font: clamp(16px, 2vw, 26px) var(--mc); color: rgba(255,255,255,.9); text-shadow: .1em .1em 0 rgba(0,0,0,.25); text-align: center; margin: auto; padding-inline: 16px; }
+body.obs #empty { display: none; }
+@keyframes pop { from { transform: translateY(.4em); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes out { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .msg { animation: none; } }
 
-#empty { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font: clamp(18px, 2.4vw, 30px) var(--mc); color: rgba(255,255,255,.85); text-shadow: .1em .1em 0 rgba(0,0,0,.2); text-align: center; padding-inline: 24px; }
-body.clean #empty { display: none; }
-
-#showPanel { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: 12px; display: none; opacity: 0; }
-body.clean #showPanel { display: block; }
+#showPanel { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: 12px; opacity: 0; }
 #showPanel:hover, #showPanel:focus-visible { opacity: 1; }
 
-#panel { width: 320px; flex: none; height: 100%; overflow-y: auto; background: var(--panel); border-left: 4px solid #11181d; }
-body.clean #panel { display: none; }
-.head { padding-block: 14px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--panel-2); border-bottom: 2px solid #11181d; display: flex; flex-direction: column; gap: 6px; }
-.head .row { justify-content: space-between; }
+/* ---------- panel ---------- */
+#panel { width: 340px; flex: none; height: 100%; overflow-y: auto; background: var(--panel); border-left: 4px solid #11181d; }
+.head { padding-block: 14px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--panel-2); border-bottom: 2px solid #11181d; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .head h1 { margin: 0; font: 20px var(--mc); text-shadow: 2px 2px 0 #000; }
-#who { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-#who .dot { width: 9px; height: 9px; background: #59656e; border: 1px solid #000; flex: none; }
-#who .dot.on { background: var(--green); }
 .sec { padding-block: 14px 18px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 10px; border-bottom: 2px solid #11181d; }
 .sec h2 { margin: 0; font: 15px var(--mc); text-shadow: 2px 2px 0 #000; font-weight: normal; }
 .row { display: flex; gap: 8px; align-items: center; }
 .grow { flex: 1; min-width: 0; }
 label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+label.check { flex-direction: row; align-items: center; gap: 8px; text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--ink); }
 .val { text-transform: none; color: var(--ink); font-variant-numeric: tabular-nums; }
-textarea { width: 100%; min-height: 60px; resize: vertical; background: #12191e; color: var(--ink); border: 2px solid var(--line); padding: 8px 9px; font: 15px var(--mc); }
+input[type=text], input[type=password], input[type=number] { width: 100%; background: #12191e; color: var(--ink); border: 2px solid var(--line); padding: 8px 9px; font: 14px var(--ui); }
 input[type=range] { width: 100%; accent-color: var(--green); }
 input[type=color] { width: 42px; height: 34px; padding: 0; border: 2px solid var(--line); background: none; flex: none; }
-input[type=file] { display: none; }
-textarea:focus, button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+input:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
 button {
   font: 13px var(--mc); color: #fff; text-shadow: 1px 1px 0 #000; cursor: pointer; white-space: nowrap;
   background: #6b7680; border: 2px solid #000; padding: 8px 12px;
@@ -72,398 +79,346 @@ button:active { box-shadow: inset 2px 3px 0 rgba(0,0,0,.35); }
 button.go { background: var(--green); }
 button.stop { background: var(--red); }
 button.sm { padding: 5px 9px; font-size: 12px; }
-button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
-.hint { margin: 0; color: var(--muted); font-size: 12px; }
-.note { margin: 0; font-size: 12px; color: #12191e; background: var(--gold); padding: 8px 10px; }
-.bg-row button.on { outline: 2px solid var(--gold); outline-offset: 1px; }
-#drop.over { outline: 2px dashed var(--gold); outline-offset: -6px; }
-body:not(.can-edit) .edit-only { display: none; }
+button.on { outline: 2px solid var(--gold); outline-offset: 1px; }
+.hint { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.hint a { color: var(--tt); }
+.hint code, .hint b { color: var(--ink); }
+.card { background: #172026; border: 2px solid var(--line); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.plat { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 600; }
+.plat .sw { display: inline-block; width: 12px; height: 12px; margin-right: 6px; border: 1px solid #000; vertical-align: -1px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-weight: normal; text-align: right; }
+.dot { width: 10px; height: 10px; background: #59656e; border: 1px solid #000; flex: none; }
+.dot.on { background: var(--green); }
+.dot.wait { background: var(--gold); }
+.dot.err { background: var(--red); }
+#obsLink { font-size: 12px; word-break: break-all; background: #12191e; border: 2px solid var(--line); padding: 8px; color: var(--ink); user-select: all; }
+
+body.obs #panel, body.clean #panel { display: none; }
+body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 
 @media (max-width: 700px) {
   body { flex-direction: column; overflow: auto; }
-  #stage { height: 60vh; flex: none; }
+  #chat { height: 55vh; flex: none; }
   #panel { width: 100%; height: auto; border-left: 0; border-top: 4px solid #11181d; }
 }
 </style>
+</head>
+<body>
 
-</head><body>
-<main id="stage" aria-label="Stage">
-  <div id="empty">Nothing here yet.<br>Add text or a photo from the panel.</div>
+<main id="chat" aria-label="Chat" aria-live="polite">
+  <div id="empty">Connect Twitch, YouTube or TikTok in the panel.<br>Everyone's chat shows up here in one box.</div>
+  <div id="lines"></div>
   <button id="showPanel" type="button">Show panel</button>
 </main>
 
 <aside id="panel">
   <div class="head">
-    <div class="row">
-      <h1>Blue Stage</h1>
-      <button id="hideBtn" class="sm" type="button" title="Hide the panel. Press H to bring it back.">Hide (H)</button>
-    </div>
-    <div id="who"><span class="dot" id="liveDot"></span><span id="whoText">Connecting…</span></div>
+    <h1>Lethal Chat</h1>
+    <button id="hideBtn" class="sm" type="button" title="Hide the panel. Press H to bring it back.">Hide (H)</button>
   </div>
 
-  <section class="sec" id="viewOnly" hidden>
-    <p class="note">This screen is view only.</p>
-  </section>
-
-  <section class="sec edit-only">
-    <h2>Add text</h2>
-    <textarea id="newText" aria-label="Text to add">Hello!</textarea>
-    <div class="row">
-      <button id="addText" class="go grow" type="button">Add text</button>
-      <input id="newColor" type="color" value="#ffffff" title="Text color" aria-label="Text color">
-    </div>
-  </section>
-
-  <section class="sec edit-only" id="drop">
-    <h2>Add photo</h2>
-    <input id="photoInput" type="file" accept="image/*" multiple>
-    <button id="addPhoto" class="go" type="button">Choose photo</button>
-    <p class="hint" id="photoHint">Or drag a photo onto the screen.</p>
-  </section>
-
-  <section class="sec edit-only">
-    <h2>Selected</h2>
-    <p class="hint" id="selHint">Click something on the screen to select it. Drag to move. Double-click text to edit it.</p>
-    <label>Size <span class="val" id="sizeVal"></span>
-      <input id="size" type="range" min="10" max="400" step="2" value="64" disabled>
-    </label>
-    <div class="row">
-      <button id="smaller" class="sm grow" type="button" disabled>Smaller</button>
-      <button id="bigger" class="sm grow" type="button" disabled>Bigger</button>
-      <input id="selColor" type="color" value="#ffffff" disabled title="Text color" aria-label="Selected text color">
-    </div>
-    <div class="row">
-      <button id="front" class="sm grow" type="button" disabled>Bring to front</button>
-      <button id="del" class="sm stop" type="button" disabled>Delete</button>
-    </div>
-  </section>
   <section class="sec">
-    <h2>Background</h2>
-    <div class="row bg-row">
-      <button class="sm grow" type="button" data-bg="blue">Light blue</button>
-      <button class="sm grow" type="button" data-bg="green">Green</button>
-      <button class="sm grow" type="button" data-bg="magenta">Magenta</button>
-      <input id="bgColor" type="color" value="#9fd8f5" title="Any color" aria-label="Background color">
+    <h2>Connect</h2>
+
+    <div class="card">
+      <div class="plat"><span><span class="sw" style="background:var(--twitch)"></span>Twitch</span><span class="status"><span class="dot" id="twDot"></span><span id="twStatus">Off</span></span></div>
+      <div class="row">
+        <input id="twChannel" class="grow" type="text" placeholder="your channel name" autocomplete="off">
+        <button id="twBtn" class="sm go" type="button">Connect</button>
+      </div>
     </div>
-    <p class="hint">For OBS, add <b>?obs</b> to the end of the link. The background turns see-through and the panel hides, so you don't need a color key.</p>
+
+    <div class="card">
+      <div class="plat"><span><span class="sw" style="background:var(--yt)"></span>YouTube</span><span class="status"><span class="dot" id="ytDot"></span><span id="ytStatus">Off</span></span></div>
+      <input id="ytChannel" type="text" placeholder="@yourhandle or a live link" autocomplete="off">
+      <div class="row">
+        <input id="ytKey" class="grow" type="password" placeholder="YouTube API key" autocomplete="off">
+        <button id="ytBtn" class="sm go" type="button">Connect</button>
+      </div>
+      <p class="hint">You have to be live. Needs a free API key from <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud</a> (turn on "YouTube Data API v3", then Credentials → Create API key).</p>
+    </div>
+
+    <div class="card">
+      <div class="plat"><span><span class="sw" style="background:var(--tt)"></span>TikTok</span><span class="status"><span class="dot" id="ttDot"></span><span id="ttStatus">Off</span></span></div>
+      <div class="row">
+        <input id="ttUrl" class="grow" type="text" value="ws://localhost:21213/" autocomplete="off" aria-label="TikTok helper address">
+        <button id="ttBtn" class="sm go" type="button">Connect</button>
+      </div>
+      <p class="hint">TikTok doesn't let websites read live chat, so open <a href="https://tikfinity.zerody.one/" target="_blank" rel="noopener">TikFinity</a> on your computer while you're live, then press Connect.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Look</h2>
+    <label>Text size <span class="val" id="sizeVal"></span>
+      <input id="size" type="range" min="14" max="96" step="2" value="32">
+    </label>
+    <label class="grow">Messages on screen
+      <input id="maxMsgs" type="number" min="1" max="100" value="12">
+    </label>
+    <label class="check"><input id="badges" type="checkbox" checked> Show platform tags</label>
+    <label class="check"><input id="fade" type="checkbox"> Fade out old messages after 30 seconds</label>
+    <div>
+      <label>Background</label>
+      <div class="row" style="margin-top:4px">
+        <button class="sm grow" type="button" data-bg="#9fd8f5">Light blue</button>
+        <button class="sm grow" type="button" data-bg="#1e272e">Dark</button>
+        <input id="bgColor" type="color" value="#9fd8f5" aria-label="Background color">
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>OBS</h2>
+    <p class="hint">Add a <b>Browser</b> source in OBS and paste this link. It has your settings built in, has a see-through background and hides this panel. Keep it private, since it includes your YouTube key.</p>
+    <div id="obsLink"></div>
+    <button id="copyObs" class="go" type="button">Copy OBS link</button>
+  </section>
+
+  <section class="sec">
+    <h2>Test</h2>
+    <div class="row">
+      <input id="testName" class="grow" type="text" value="Steve" autocomplete="off" aria-label="Test name">
+      <input id="testMsg" class="grow" type="text" value="hello chat!" autocomplete="off" aria-label="Test message">
+      <button id="testSend" class="sm" type="button">Send</button>
+    </div>
   </section>
 </aside>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script src="supabase-config.js"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  const stage = $('stage');
-  const items = new Map();       // id -> data
-  const els = new Map();         // id -> element
-  let selected = null;
-  let busy = null;               // id being dragged or edited here; ignore remote updates to it
-  let canEdit = true;
-  let store = null;              // set below: shared (db) or this-screen-only
-  let room = null, assets = null;
+  const lines = $('lines');
+  const params = new URLSearchParams(location.search);
+  const OBS = params.has('obs');
 
-  // ---------- rendering ----------
-  function photoSrc(d) { return d.photo ? '/_blob/' + d.photo : (d.dataUrl || ''); }
-  function applyData(id) {
-    const d = items.get(id), el = els.get(id);
-    el.style.left = d.x + '%'; el.style.top = d.y + '%';
-    el.style.zIndex = String(Math.floor((d.z || 0) / 1000) % 1e9);
-    if (d.type === 'text') {
-      if (!el.isContentEditable) el.textContent = d.text;
-      el.style.color = d.color || '#ffffff';
-      el.style.fontSize = d.size + 'px';
-    } else {
-      el.style.width = (d.size * 4) + 'px';
-      const img = el.querySelector('img'), src = photoSrc(d);
-      if (img && img.getAttribute('src') !== src) img.src = src;
-    }
+  // ---------- settings: from the link (OBS) or this browser ----------
+  const KEY = 'lethal-chat-v1';
+  let saved = {};
+  if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {} }
+  const S = Object.assign({ twitch: '', yt: '', ytKey: '', tt: 'ws://localhost:21213/', useTt: false, size: 32, max: 12, badges: true, fade: false, bg: '#9fd8f5' }, saved);
+  if (OBS) {
+    ['twitch', 'yt', 'ytKey', 'tt'].forEach(k => { if (params.get(k)) S[k] = params.get(k); });
+    if (params.get('size')) S.size = +params.get('size') || S.size;
+    if (params.get('max')) S.max = +params.get('max') || S.max;
+    if (params.has('nobadges')) S.badges = false;
+    if (params.has('fade')) S.fade = true;
   }
-  function upsert(id, d) {
-    items.set(id, d);
-    if (!els.has(id)) build(id, d.type);
-    if (busy !== id) applyData(id);
-    $('empty').hidden = items.size > 0;
-    if (selected === id) select(id);
-  }
-  function drop(id) {
-    items.delete(id);
-    const el = els.get(id); if (el) el.remove(); els.delete(id);
-    if (selected === id) select(null);
-    $('empty').hidden = items.size > 0;
-  }
+  function save() { if (OBS) return; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} updateObsLink(); }
 
-  function build(id, type) {
-    const el = document.createElement('div');
-    el.className = 'item ' + type;
-    el.tabIndex = 0;
-    if (type === 'photo') {
-      const img = document.createElement('img'); img.alt = '';
-      img.onerror = () => { const m = document.createElement('div'); m.className = 'missing'; m.textContent = 'Photo unavailable'; img.replaceWith(m); };
-      el.appendChild(img);
-    }
-    stage.insertBefore(el, $('showPanel'));
-    els.set(id, el);
-
-    let start = null, lastEmit = 0;
-    el.addEventListener('pointerdown', e => {
-      if (!canEdit) return;
-      select(id);
-      if (el.isContentEditable) return;
-      const d = items.get(id), r = stage.getBoundingClientRect();
-      start = { px: e.clientX, py: e.clientY, x: d.x, y: d.y, w: r.width, h: r.height, moved: false };
-      busy = id;
-      el.setPointerCapture(e.pointerId); el.classList.add('dragging');
-    });
-    el.addEventListener('pointermove', e => {
-      if (!start) return;
-      const d = items.get(id);
-      const x = Math.max(0, Math.min(100, start.x + (e.clientX - start.px) / start.w * 100));
-      const y = Math.max(0, Math.min(100, start.y + (e.clientY - start.py) / start.h * 100));
-      start.moved = true;
-      items.set(id, Object.assign({}, d, { x, y }));
-      el.style.left = x + '%'; el.style.top = y + '%';
-      const now = Date.now();
-      if (store && store.liveMove && now - lastEmit > 100) { lastEmit = now; store.patch(id, { x, y }); }
-    });
-    const end = () => {
-      if (!start) return;
-      const moved = start.moved; start = null; el.classList.remove('dragging');
-      if (moved) { const d = items.get(id); store.patch(id, { x: d.x, y: d.y }).finally(() => { if (busy === id) busy = null; }); }
-      else if (busy === id) busy = null;
-    };
-    el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
-    el.addEventListener('focus', () => { if (canEdit) select(id); });
-
-    if (type === 'text') {
-      el.addEventListener('dblclick', () => {
-        if (!canEdit) return;
-        busy = id;
-        el.contentEditable = 'true'; el.focus();
-        const r = document.createRange(); r.selectNodeContents(el);
-        const s = getSelection(); s.removeAllRanges(); s.addRange(r);
-      });
-      el.addEventListener('blur', () => {
-        if (!el.isContentEditable) return;
-        el.contentEditable = 'false';
-        const text = el.innerText.trim() || ' ';
-        items.set(id, Object.assign({}, items.get(id), { text }));
-        el.textContent = text;
-        store.patch(id, { text }).finally(() => { if (busy === id) busy = null; });
-      });
-      el.addEventListener('keydown', e => { if (el.isContentEditable && e.key === 'Escape') el.blur(); });
-    }
+  function applyLook() {
+    document.documentElement.style.setProperty('--size', S.size + 'px');
+    $('size').value = S.size; $('sizeVal').textContent = S.size + 'px';
+    $('maxMsgs').value = S.max; $('badges').checked = S.badges; $('fade').checked = S.fade;
+    document.body.classList.toggle('hide-badges', !S.badges);
+    if (OBS) { document.documentElement.style.background = 'transparent'; document.body.style.background = 'transparent'; }
+    else { document.body.style.background = S.bg; $('bgColor').value = S.bg; }
+    document.querySelectorAll('[data-bg]').forEach(b => b.classList.toggle('on', b.dataset.bg === S.bg));
+    trim();
   }
-
-  // ---------- selection + controls ----------
-  function current() { return selected && items.get(selected); }
-  function select(id) {
-    selected = id && items.has(id) ? id : null;
-    els.forEach((el, k) => el.classList.toggle('selected', k === selected));
-    const d = current();
-    ['size', 'smaller', 'bigger', 'del', 'front'].forEach(k => $(k).disabled = !d);
-    $('selColor').disabled = !d || d.type !== 'text';
-    if (d) {
-      $('size').value = d.size;
-      $('sizeVal').textContent = d.type === 'text' ? d.size + 'px' : (d.size * 4) + 'px wide';
-      if (d.type === 'text') $('selColor').value = d.color || '#ffffff';
-      $('selHint').textContent = d.type === 'text' ? 'Text selected. Double-click it to edit.' : 'Photo selected.';
-    } else {
-      $('sizeVal').textContent = '';
-      $('selHint').textContent = 'Click something on the screen to select it. Drag to move. Double-click text to edit it.';
-    }
-  }
-  // Local change now, shared write after a short pause.
-  const pending = new Map();
-  function change(fields) {
-    const d = current(); if (!d) return;
-    const id = selected;
-    items.set(id, Object.assign({}, d, fields)); applyData(id); select(id);
-    const p = Object.assign(pending.get(id) || {}, fields); pending.set(id, p);
-    clearTimeout(p._t);
-    p._t = setTimeout(() => { const f = Object.assign({}, p); delete f._t; pending.delete(id); store.patch(id, f); }, 300);
-  }
-  const clampSize = v => Math.max(10, Math.min(400, v));
-  $('size').addEventListener('input', e => change({ size: clampSize(+e.target.value) }));
-  $('smaller').onclick = () => change({ size: clampSize(current().size - 8) });
-  $('bigger').onclick = () => change({ size: clampSize(current().size + 8) });
-  $('selColor').addEventListener('input', e => change({ color: e.target.value }));
-  $('front').onclick = () => change({ z: Date.now() });
-  function remove() {
-    const d = current(); if (!d) return;
-    const id = selected;
-    drop(id); store.remove(id, d);
-  }
-  $('del').onclick = remove;
-  stage.addEventListener('pointerdown', e => { if (e.target === stage || e.target.id === 'empty') select(null); });
-
-  function newId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-  $('addText').onclick = () => {
-    const text = $('newText').value.trim(); if (!text) return;
-    const id = newId('t');
-    const d = { type: 'text', text, x: 45 + Math.random() * 10, y: 45 + Math.random() * 10, size: 64, color: $('newColor').value, z: Date.now() };
-    upsert(id, d); select(id); store.add(id, d);
-  };
-
-  // ---------- photos ----------
-  function shrink(file, maxSide, quality) {
-    return new Promise((resolve, reject) => {
-      const img = new Image(), url = URL.createObjectURL(file);
-      img.onload = () => {
-        const k = Math.min(1, maxSide / Math.max(img.width, img.height));
-        const c = document.createElement('canvas');
-        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        URL.revokeObjectURL(url);
-        const type = file.type === 'image/png' && !assets ? 'image/jpeg' : (file.type === 'image/png' ? 'image/png' : 'image/jpeg');
-        c.toBlob(b => b ? resolve(b) : reject(new Error('shrink failed')), type, quality);
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('not an image')); };
-      img.src = url;
-    });
-  }
-  const blobToDataUrl = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
-
-  async function addFiles(files) {
-    if (!canEdit) return;
-    const list = [...files].filter(f => f.type.startsWith('image/'));
-    for (let n = 0; n < list.length; n++) {
-      const f = list[n];
-      $('photoHint').textContent = 'Uploading ' + f.name + '…';
-      const id = newId('p');
-      const base = { type: 'photo', x: 50 + n * 3, y: 50 + n * 3, size: 75, z: Date.now() };
-      try {
-        if (assets) {
-          const blob = f.type === 'image/gif' ? f : await shrink(f, 2000, .88);
-          const res = await assets.upload(blob, { type: blob.type });
-          const d = Object.assign(base, { photo: res.id });
-          upsert(id, d); select(id); await store.add(id, d);
-        } else {
-          // No shared file storage in this view: keep a small copy inside the item itself.
-          const blob = await shrink(f, 900, .8);
-          const d = Object.assign(base, { dataUrl: await blobToDataUrl(blob) });
-          upsert(id, d); select(id); await store.add(id, d);
-        }
-        $('photoHint').textContent = 'Or drag a photo onto the screen.';
-      } catch (e) {
-        $('photoHint').textContent = e && e.code === 'too_large' ? 'That photo is too big. Try a smaller one.'
-          : e && e.code === 'rate_limited' ? 'Too many uploads at once. Wait a moment and try again.'
-          : 'That photo could not be added. Try a JPG or PNG.';
-      }
-    }
-  }
-  $('addPhoto').onclick = () => $('photoInput').click();
-  $('photoInput').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
-  ['dragover', 'dragenter'].forEach(t => document.addEventListener(t, e => { e.preventDefault(); if (canEdit) $('drop').classList.add('over'); }));
-  ['dragleave', 'drop'].forEach(t => document.addEventListener(t, e => { e.preventDefault(); $('drop').classList.remove('over'); }));
-  document.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files); });
+  $('size').addEventListener('input', e => { S.size = +e.target.value; applyLook(); save(); });
+  $('maxMsgs').addEventListener('input', e => { S.max = Math.max(1, Math.min(100, +e.target.value || 1)); applyLook(); save(); });
+  $('badges').addEventListener('change', e => { S.badges = e.target.checked; applyLook(); save(); });
+  $('fade').addEventListener('change', e => { S.fade = e.target.checked; save(); });
+  document.querySelectorAll('[data-bg]').forEach(b => b.onclick = () => { S.bg = b.dataset.bg; applyLook(); save(); });
+  $('bgColor').addEventListener('input', e => { S.bg = e.target.value; applyLook(); save(); });
 
   // ---------- panel ----------
-  const toggle = force => document.body.classList.toggle('clean', force);
-  $('hideBtn').onclick = () => toggle(true);
-  $('showPanel').onclick = () => toggle(false);
+  if (OBS) document.body.classList.add('obs');
+  $('hideBtn').onclick = () => document.body.classList.add('clean');
+  $('showPanel').onclick = () => document.body.classList.remove('clean');
   document.addEventListener('keydown', e => {
-    const t = e.target;
-    if (t.isContentEditable || /INPUT|TEXTAREA/.test(t.tagName)) return;
-    if (e.key === 'h' || e.key === 'H') toggle();
-    if ((e.key === 'Delete' || e.key === 'Backspace') && selected && canEdit) remove();
+    if (/INPUT|TEXTAREA/.test(e.target.tagName) || OBS) return;
+    if (e.key === 'h' || e.key === 'H') document.body.classList.toggle('clean');
   });
 
-  function setWho(live, text) { $('liveDot').className = 'dot' + (live ? ' on' : ''); $('whoText').textContent = text; }
-  function setCanEdit(v) {
-    canEdit = v;
-    document.body.classList.toggle('can-edit', v);
-    $('viewOnly').hidden = v;
-    if (!v) select(null);
+  // ---------- OBS link ----------
+  function obsUrl() {
+    const u = new URL(location.href.split('?')[0].split('#')[0]);
+    u.searchParams.set('obs', '');
+    if (S.twitch) u.searchParams.set('twitch', S.twitch);
+    if (S.yt) u.searchParams.set('yt', S.yt);
+    if (S.ytKey) u.searchParams.set('ytKey', S.ytKey);
+    if (S.tt && S.tt !== 'ws://localhost:21213/') u.searchParams.set('tt', S.tt);
+    u.searchParams.set('size', S.size); u.searchParams.set('max', S.max);
+    if (!S.badges) u.searchParams.set('nobadges', '');
+    if (S.fade) u.searchParams.set('fade', '');
+    if (S.useTt) u.searchParams.set('tiktok', '');
+    return u.toString().replace('obs=&', 'obs&').replace(/obs=$/, 'obs').replace('nobadges=', 'nobadges').replace('fade=', 'fade').replace('tiktok=', 'tiktok');
+  }
+  function updateObsLink() { $('obsLink').textContent = obsUrl().replace(/ytKey=[^&]+/, 'ytKey=••••••'); }
+  $('copyObs').onclick = () => {
+    const url = obsUrl();
+    const done = () => { $('copyObs').textContent = 'Copied!'; setTimeout(() => $('copyObs').textContent = 'Copy OBS link', 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, () => { $('obsLink').textContent = url; });
+    else $('obsLink').textContent = url;
+  };
+
+  // ---------- messages ----------
+  const safeColor = c => /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : null;
+  const DEFAULT_NAME = { twitch: '#d9c2ff', youtube: '#ffb3ae', tiktok: '#a8fbf8', test: '#f6c945' };
+  const TAG = { twitch: 'TWITCH', youtube: 'YT', tiktok: 'TIKTOK', test: 'TEST' };
+  function trim() { while (lines.children.length > S.max) lines.firstChild.remove(); }
+  function addMessage(m) {
+    if (!m.text) return;
+    $('empty').hidden = true;
+    const row = document.createElement('div'); row.className = 'msg';
+    if (S.fade) { row.classList.add('fade'); row.style.setProperty('--life', '30s'); }
+    const badge = document.createElement('span'); badge.className = 'badge ' + m.platform; badge.textContent = TAG[m.platform];
+    const name = document.createElement('span'); name.className = 'name'; name.textContent = m.name;
+    name.style.color = safeColor(m.color) || DEFAULT_NAME[m.platform];
+    const text = document.createElement('span'); text.textContent = m.text;
+    row.append(badge, name, text);
+    lines.appendChild(row); trim();
   }
 
-  // ---------- this-screen-only store (used when shared saving isn't available) ----------
-  function localStore() {
-    const KEY = 'blue-stage-github-local-v1';
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
-    Object.entries(saved).forEach(([id, d]) => upsert(id, d));
-    const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(items))); } catch (e) {} };
-    return {
-      add: async () => persist(),
-      patch: async () => persist(),
-      remove: async () => persist()
-    };
-  }
+  function setStatus(p, state, text) { $(p + 'Dot').className = 'dot' + (state ? ' ' + state : ''); $(p + 'Status').textContent = text; }
+  function setBtn(p, on) { $(p + 'Btn').textContent = on ? 'Disconnect' : 'Connect'; $(p + 'Btn').className = 'sm ' + (on ? 'stop' : 'go'); }
 
-  // ---------- shared store ----------
-  async function start() {
-    setCanEdit(true);
-    $('photoHint').textContent = 'Or drag a photo onto the screen.';
-    const cfg = window.SUPABASE_CONFIG;
-    if (!cfg || !cfg.url || !cfg.key || !window.supabase) {
-      store = localStore();
-      setWho(false, 'Only on this screen (not connected yet)');
-      return;
+  // ---------- Twitch (reads chat anonymously) ----------
+  let tw = null, twOn = false;
+  function twConnect() {
+    const chan = $('twChannel').value.trim().toLowerCase().replace(/.*twitch\.tv\//, '').replace(/^[#@]/, '').split(/[/?]/)[0];
+    if (!chan) { setStatus('tw', 'err', 'Type your channel name'); return; }
+    S.twitch = chan; $('twChannel').value = chan; save();
+    twOn = true; setBtn('tw', true); setStatus('tw', 'wait', 'Connecting…');
+    tw = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+    tw.onopen = () => { tw.send('CAP REQ :twitch.tv/tags'); tw.send('PASS SCHMOOPIIE'); tw.send('NICK justinfan' + Math.floor(10000 + Math.random() * 80000)); tw.send('JOIN #' + chan); };
+    tw.onmessage = ev => ev.data.split('\r\n').forEach(raw => {
+      if (!raw) return;
+      if (raw.startsWith('PING')) { tw.send('PONG :tmi.twitch.tv'); return; }
+      let line = raw, tags = {};
+      if (line[0] === '@') {
+        const i = line.indexOf(' ');
+        line.slice(1, i).split(';').forEach(kv => { const j = kv.indexOf('='); tags[kv.slice(0, j)] = kv.slice(j + 1); });
+        line = line.slice(i + 1);
+      }
+      if (/ 366 /.test(line) || / ROOMSTATE /.test(line)) setStatus('tw', 'on', '#' + chan);
+      const m = line.match(/^:([^!]+)!\S+ PRIVMSG #\S+ :(.*)$/);
+      if (m) {
+        let text = m[2];
+        if (text.startsWith('\u0001ACTION ')) text = text.slice(8, -1);
+        addMessage({ platform: 'twitch', name: (tags['display-name'] || m[1]).replace(/\\s/g, ' '), color: tags.color, text });
+      }
+    });
+    tw.onclose = () => { if (twOn) { setStatus('tw', 'wait', 'Reconnecting…'); setTimeout(() => { if (twOn) twConnect(); }, 3000); } };
+  }
+  function twOff() { twOn = false; if (tw) { tw.onclose = null; tw.close(); } setBtn('tw', false); setStatus('tw', '', 'Off'); }
+  $('twBtn').onclick = () => twOn ? twOff() : twConnect();
+
+  // ---------- YouTube (Data API v3) ----------
+  let yt = { on: false };
+  const API = 'https://www.googleapis.com/youtube/v3/';
+  async function api(path, key) {
+    const r = await fetch(API + path + '&key=' + encodeURIComponent(key));
+    const j = await r.json();
+    if (j.error) {
+      const reason = (j.error.errors && j.error.errors[0] && j.error.errors[0].reason) || '';
+      if (reason === 'quotaExceeded') throw new Error('Out of YouTube quota for today');
+      if (/keyInvalid|badRequest/.test(reason) || r.status === 400) throw new Error('API key not accepted');
+      throw new Error(String(j.error.message || 'YouTube error').replace(/<[^>]+>/g, '').slice(0, 70));
     }
-    let sb;
-    try { sb = window.supabase.createClient(cfg.url, cfg.key); }
-    catch (e) { store = localStore(); setWho(false, 'Connection settings are wrong. Showing this screen only.'); return; }
-
-    const table = () => sb.from('items');
-    const report = res => { if (res && res.error) setWho(false, 'Could not save: ' + res.error.message); return res; };
-    const full = id => { const d = Object.assign({}, items.get(id)); return d; };
-    store = {
-      liveMove: true,
-      add: (id, d) => table().upsert({ id, data: d }).then(report),
-      patch: id => items.has(id) ? table().upsert({ id, data: full(id) }).then(report) : Promise.resolve(),
-      remove: id => table().delete().eq('id', id).then(report)
-    };
-    const incoming = (id, data) => {
-      if (!id || !data || (data.type !== 'text' && data.type !== 'photo')) return;
-      const d = Object.assign({}, data);
-      const p = pending.get(id);
-      if (p) Object.keys(p).forEach(k => { if (k !== '_t') d[k] = p[k]; });
-      upsert(id, d);
-    };
-
-    sb.channel('items-live')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, p => {
-        if (p.eventType === 'DELETE') { if (p.old && p.old.id) drop(p.old.id); }
-        else if (p.new) incoming(p.new.id, p.new.data);
-      })
-      .subscribe(status => {
-        if (status === 'SUBSCRIBED') setWho(true, 'Live: changes show for everyone');
-        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setWho(false, 'Reconnecting…');
+    return j;
+  }
+  async function findLiveVideo(input, key) {
+    input = input.trim();
+    const vid = input.match(/(?:v=|youtu\.be\/|\/live\/|\/shorts\/|\/embed\/)([\w-]{11})/);
+    if (vid) return vid[1];
+    if (/^[\w-]{11}$/.test(input)) return input;
+    let channelId = (input.match(/(UC[\w-]{22})/) || [])[1];
+    if (!channelId) {
+      const handle = (input.match(/@([\w.\-]+)/) || [null, input.replace(/^.*youtube\.com\//, '')])[1];
+      const c = await api('channels?part=id&forHandle=' + encodeURIComponent('@' + handle), key);
+      channelId = c.items && c.items[0] && c.items[0].id;
+      if (!channelId) throw new Error('Couldn\'t find that channel');
+    }
+    const s = await api('search?part=id&type=video&eventType=live&maxResults=1&channelId=' + channelId, key);
+    const id = s.items && s.items[0] && s.items[0].id && s.items[0].id.videoId;
+    if (!id) throw new Error('Not live right now');
+    return id;
+  }
+  async function ytConnect(isRetry) {
+    const key = $('ytKey').value.trim(), input = $('ytChannel').value.trim();
+    if (!input) { setStatus('yt', 'err', 'Type your @handle'); return; }
+    if (!key) { setStatus('yt', 'err', 'Add your API key'); return; }
+    S.yt = input; S.ytKey = key; save();
+    yt = { on: true, key, page: null, first: true, timer: null };
+    setBtn('yt', true); setStatus('yt', 'wait', 'Finding your stream…');
+    try {
+      const videoId = await findLiveVideo(input, key);
+      const v = await api('videos?part=liveStreamingDetails&id=' + videoId, key);
+      const chatId = v.items && v.items[0] && v.items[0].liveStreamingDetails && v.items[0].liveStreamingDetails.activeLiveChatId;
+      if (!chatId) throw new Error('Not live right now');
+      if (!yt.on) return;
+      yt.chatId = chatId; setStatus('yt', 'on', 'Live'); ytPoll();
+    } catch (e) {
+      if (!yt.on) return;
+      setStatus('yt', 'err', e.message + (OBS || isRetry ? ' (trying again soon)' : ''));
+      if (OBS && e.message === 'Not live right now') { yt.timer = setTimeout(() => yt.on && ytConnect(true), 120000); }
+      else { yt.on = false; setBtn('yt', false); }
+    }
+  }
+  async function ytPoll() {
+    if (!yt.on) return;
+    let wait = 6000;
+    try {
+      const j = await api('liveChat/messages?part=snippet,authorDetails&maxResults=200&liveChatId=' + encodeURIComponent(yt.chatId) + (yt.page ? '&pageToken=' + yt.page : ''), yt.key);
+      yt.page = j.nextPageToken;
+      wait = Math.max(j.pollingIntervalMillis || 6000, 6000);
+      if (!yt.first) (j.items || []).forEach(it => {
+        const a = it.authorDetails || {}, s = it.snippet || {};
+        if (s.displayMessage) addMessage({ platform: 'youtube', name: a.displayName || 'viewer', text: s.displayMessage });
       });
-
-    const { data, error } = await table().select('id,data');
-    if (error) { setWho(false, 'Can\'t load the screen: ' + error.message); return; }
-    (data || []).forEach(r => incoming(r.id, r.data));
+      yt.first = false; setStatus('yt', 'on', 'Live');
+    } catch (e) {
+      setStatus('yt', 'err', e.message);
+      if (/ended|not found|no longer/i.test(e.message)) { ytOff(); setStatus('yt', 'err', 'Stream ended'); return; }
+      wait = 20000;
+    }
+    if (yt.on) yt.timer = setTimeout(ytPoll, wait);
   }
+  function ytOff() { yt.on = false; clearTimeout(yt.timer); setBtn('yt', false); setStatus('yt', '', 'Off'); }
+  $('ytBtn').onclick = () => yt.on ? ytOff() : ytConnect();
 
-  // ---------- background (each screen picks its own, so OBS can use a key color) ----------
-  const BG = { blue: '#9fd8f5', green: '#00ff00', magenta: '#ff00ff' };
-  function setBg(v, remember) {
-    const color = BG[v] || v;
-    if (color !== 'transparent' && !/^#[0-9a-fA-F]{6}$/.test(color)) return;
-    document.documentElement.style.background = color === 'transparent' ? 'transparent' : '';
-    document.body.style.background = color; stage.style.background = color;
-    if (color !== 'transparent') $('bgColor').value = color.toLowerCase();
-    document.querySelectorAll('[data-bg]').forEach(b => b.classList.toggle('on', BG[b.dataset.bg] === color.toLowerCase()));
-    if (remember) { try { localStorage.setItem('blue-stage-bg', color); } catch (e) {} }
+  // ---------- TikTok (through TikFinity on this computer) ----------
+  let tt = null, ttOn = false;
+  function ttConnect() {
+    const url = $('ttUrl').value.trim() || 'ws://localhost:21213/'; S.tt = url; S.useTt = true; save();
+    ttOn = true; setBtn('tt', true); setStatus('tt', 'wait', 'Connecting…');
+    try { tt = new WebSocket(url); } catch (e) { ttOn = false; setBtn('tt', false); setStatus('tt', 'err', 'That address is wrong'); return; }
+    tt.onopen = () => setStatus('tt', 'on', 'Connected');
+    tt.onmessage = ev => {
+      let j; try { j = JSON.parse(ev.data); } catch (e) { return; }
+      if (j.event !== 'chat' || !j.data) return;
+      const d = j.data, u = d.user || {};
+      addMessage({ platform: 'tiktok', name: d.nickname || u.nickname || d.uniqueId || u.uniqueId || 'viewer', text: d.comment });
+    };
+    tt.onclose = () => { if (ttOn) { setStatus('tt', 'err', 'Is TikFinity open? Retrying…'); setTimeout(() => { if (ttOn) ttConnect(); }, 5000); } };
   }
-  document.querySelectorAll('[data-bg]').forEach(b => b.onclick = () => setBg(b.dataset.bg, true));
-  $('bgColor').addEventListener('input', e => setBg(e.target.value, true));
-  (() => {
-    let q = null;
-    try { q = new URLSearchParams(location.search).get('bg'); } catch (e) {}
-    let obs = false;
-    try { obs = new URLSearchParams(location.search).has('obs'); } catch (e) {}
-    if (obs) { setBg('transparent', false); toggle(true); return; }
-    if (q) { q = q.trim().toLowerCase(); if (/^[0-9a-f]{6}$/.test(q)) q = '#' + q; setBg(q, false); return; }
-    let saved = null; try { saved = localStorage.getItem('blue-stage-bg'); } catch (e) {}
-    setBg(saved || 'blue', false);
-  })();
+  function ttOff() { ttOn = false; S.useTt = false; save(); if (tt) { tt.onclose = null; tt.close(); } setBtn('tt', false); setStatus('tt', '', 'Off'); }
+  $('ttBtn').onclick = () => ttOn ? ttOff() : ttConnect();
 
-  select(null);
-  start();
+  // ---------- test ----------
+  function sendTest() {
+    const text = $('testMsg').value.trim(); if (!text) return;
+    addMessage({ platform: 'test', name: $('testName').value.trim() || 'Steve', text });
+    $('testMsg').value = ''; $('testMsg').focus();
+  }
+  $('testSend').onclick = sendTest;
+  $('testMsg').addEventListener('keydown', e => { if (e.key === 'Enter') sendTest(); });
+
+  // ---------- start ----------
+  $('twChannel').value = S.twitch; $('ytChannel').value = S.yt; $('ytKey').value = S.ytKey; $('ttUrl').value = S.tt;
+  $('twChannel').addEventListener('change', e => { S.twitch = e.target.value.trim().toLowerCase().replace(/.*twitch\.tv\//, '').replace(/^[#@]/, '').split(/[/?]/)[0]; save(); });
+  $('ytChannel').addEventListener('change', e => { S.yt = e.target.value.trim(); save(); });
+  $('ytKey').addEventListener('change', e => { S.ytKey = e.target.value.trim(); save(); });
+  applyLook(); updateObsLink();
+  if (OBS) {
+    if (S.twitch) twConnect();
+    if (S.yt && S.ytKey) ytConnect();
+    if (params.has('tt') || params.has('tiktok')) ttConnect();
+  }
 })();
 </script>
-
-</body></html>
+</body>
+</html>
