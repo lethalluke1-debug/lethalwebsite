@@ -7,7 +7,7 @@
 <style>
 @font-face { font-family: "MC"; src: url(data:font/ttf;base64,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) format("truetype"); font-display: block; }
 
-/* Layout: the chat fills the screen; settings panel docked right (H hides it). ?obs = see-through, no panel. */
+/* Layout: Streamlabs-style chat column fills the screen; settings panel docked right (H hides it). ?obs = see-through, no panel. */
 :root {
   --bg: #9fd8f5;
   --panel: #1e272e;
@@ -18,13 +18,16 @@
   --green: #5aae3c;
   --red: #d65a4f;
   --gold: #f6c945;
-  --twitch: #a970ff;
-  --yt: #ff4e45;
-  --tt: #25f4ee;
-  --test: #c6ced4;
+  --twitch: #9146ff;
+  --yt: #ff0033;
+  --tt: #111111;
+  --test: #6b7680;
   --mc: "MC", "Courier New", monospace;
   --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --size: 32px;
+  --chat-font: var(--mc);
+  --size: 28px;
+  --text: #ffffff;
+  --box: rgba(17, 24, 29, .78);
   color-scheme: light;
 }
 * { box-sizing: border-box; }
@@ -34,23 +37,53 @@ body { background: var(--bg); color: var(--ink); font: 14px/1.4 var(--ui); displ
 
 /* ---------- chat ---------- */
 #chat { position: relative; flex: 1; min-width: 0; height: 100%; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: 16px; }
-#lines { display: flex; flex-direction: column; gap: .3em; font-family: var(--mc); font-size: var(--size); line-height: 1.2; color: #fff; text-shadow: .1em .1em 0 #2b3540; -webkit-font-smoothing: none; }
-.msg { overflow-wrap: anywhere; animation: pop .18s steps(3) both; }
-.msg.fade { animation: pop .18s steps(3) both, out .6s steps(4) forwards; animation-delay: 0s, var(--life, 30s); }
-.badge { display: inline-block; font-size: .5em; padding: .15em .35em .1em; margin-right: .45em; vertical-align: .3em; color: #11181d; text-shadow: none; border: .12em solid #11181d; }
-.badge.twitch { background: var(--twitch); }
-.badge.youtube { background: var(--yt); }
-.badge.tiktok { background: var(--tt); }
-.badge.test { background: var(--test); }
-.name { margin-right: .3em; }
-.name::after { content: ":"; color: #fff; }
-body.hide-badges .badge { display: none; }
-#empty { font: clamp(16px, 2vw, 26px) var(--mc); color: rgba(255,255,255,.9); text-shadow: .1em .1em 0 rgba(0,0,0,.25); text-align: center; margin: auto; padding-inline: 16px; }
-body.obs #empty { display: none; }
-@keyframes pop { from { transform: translateY(.4em); opacity: 0; } to { transform: none; opacity: 1; } }
-@keyframes out { to { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .msg { animation: none; } }
+#lines { display: flex; flex-direction: column; gap: .35em; font-family: var(--chat-font); font-size: var(--size); line-height: 1.25; color: var(--text); width: 100%; }
+body.align-right #lines { align-items: flex-end; text-align: right; }
+.msg { overflow-wrap: anywhere; max-width: 100%; }
+.icon { display: inline-grid; place-items: center; width: 1.05em; height: 1.05em; border-radius: .22em; vertical-align: -.15em; margin-right: .35em; flex: none; }
+.icon svg { width: 68%; height: 68%; display: block; }
+.icon.twitch { background: var(--twitch); }
+.icon.youtube { background: var(--yt); }
+.icon.tiktok { background: var(--tt); box-shadow: inset 0 0 0 .07em #25f4ee; }
+.icon.test { background: var(--test); }
+.badge { display: inline-block; font: 700 .48em/1 var(--ui); letter-spacing: .04em; padding: .28em .4em .24em; border-radius: .3em; margin-right: .35em; vertical-align: .32em; color: #fff; text-shadow: none; }
+.badge.mod { background: #00ad03; }
+.badge.vip { background: #e005b9; }
+.badge.sub { background: #8205b4; }
+.badge.host { background: #e91916; }
+.name { font-weight: 700; margin-right: .35em; }
+.text { white-space: pre-wrap; }
+body.no-icons .icon { display: none; }
 
+/* themes */
+body.theme-clean #lines { text-shadow: .08em .08em 0 #2b3540; }
+body.theme-clean .name::after { content: ":"; color: var(--text); }
+body.theme-boxed .msg { background: var(--box); padding: .35em .6em .4em; border-radius: .45em; width: fit-content; }
+body.theme-boxed .name { display: inline; }
+body.theme-boxed .name::after { content: ""; }
+body.theme-boxed .text { display: block; margin-top: .1em; }
+body.theme-chunky #lines { gap: .2em; font-weight: 800; -webkit-text-stroke: .06em #11181d; paint-order: stroke fill; text-shadow: .09em .09em 0 #11181d; }
+body.theme-chunky .name { text-transform: uppercase; }
+body.theme-chunky .name::after { content: " »"; color: var(--text); }
+body.font-mc #lines { -webkit-font-smoothing: none; }
+body.font-mc .name { font-weight: normal; }
+body.font-mc.theme-chunky #lines { font-weight: normal; }
+
+/* animations */
+.msg.in-up { animation: in-up .35s cubic-bezier(.2, .9, .3, 1.2) both; }
+.msg.in-left { animation: in-left .35s cubic-bezier(.2, .9, .3, 1.1) both; }
+.msg.in-right { animation: in-right .35s cubic-bezier(.2, .9, .3, 1.1) both; }
+.msg.in-fade { animation: in-fade .4s ease both; }
+.msg.leaving { animation: out .5s ease forwards; }
+@keyframes in-up { from { transform: translateY(60%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes in-left { from { transform: translateX(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes in-right { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes in-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes out { to { opacity: 0; transform: translateX(-12px); } }
+@media (prefers-reduced-motion: reduce) { .msg { animation: none !important; } }
+
+#empty { font: clamp(16px, 2vw, 24px) var(--mc); color: rgba(255,255,255,.92); text-shadow: .1em .1em 0 rgba(0,0,0,.25); text-align: center; margin: auto; padding-inline: 16px; }
+body.obs #empty { display: none; }
 #showPanel { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: 12px; opacity: 0; }
 #showPanel:hover, #showPanel:focus-visible { opacity: 1; }
 
@@ -62,13 +95,15 @@ body.obs #empty { display: none; }
 .sec h2 { margin: 0; font: 15px var(--mc); text-shadow: 2px 2px 0 #000; font-weight: normal; }
 .row { display: flex; gap: 8px; align-items: center; }
 .grow { flex: 1; min-width: 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid2 > * { min-width: 0; }
 label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
 label.check { flex-direction: row; align-items: center; gap: 8px; text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--ink); }
 .val { text-transform: none; color: var(--ink); font-variant-numeric: tabular-nums; }
-input[type=text], input[type=password], input[type=number] { width: 100%; background: #12191e; color: var(--ink); border: 2px solid var(--line); padding: 8px 9px; font: 14px var(--ui); }
+input[type=text], input[type=number], select { width: 100%; background: #12191e; color: var(--ink); border: 2px solid var(--line); padding: 8px 9px; font: 14px var(--ui); }
 input[type=range] { width: 100%; accent-color: var(--green); }
 input[type=color] { width: 42px; height: 34px; padding: 0; border: 2px solid var(--line); background: none; flex: none; }
-input:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+input:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
 button {
   font: 13px var(--mc); color: #fff; text-shadow: 1px 1px 0 #000; cursor: pointer; white-space: nowrap;
   background: #6b7680; border: 2px solid #000; padding: 8px 12px;
@@ -79,19 +114,22 @@ button:active { box-shadow: inset 2px 3px 0 rgba(0,0,0,.35); }
 button.go { background: var(--green); }
 button.stop { background: var(--red); }
 button.sm { padding: 5px 9px; font-size: 12px; }
-button.on { outline: 2px solid var(--gold); outline-offset: 1px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg button { padding: 7px 4px; font-size: 12px; }
+.seg button.on { background: var(--green); }
 .hint { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
-.hint a { color: var(--tt); }
-.hint code, .hint b { color: var(--ink); }
+.hint a { color: #6fe9e4; }
+.hint b { color: var(--ink); }
 .card { background: #172026; border: 2px solid var(--line); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 .plat { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 600; }
-.plat .sw { display: inline-block; width: 12px; height: 12px; margin-right: 6px; border: 1px solid #000; vertical-align: -1px; }
+.plat .sw { display: inline-block; width: 12px; height: 12px; margin-right: 4px; border: 1px solid #000; vertical-align: -1px; }
 .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-weight: normal; text-align: right; }
 .dot { width: 10px; height: 10px; background: #59656e; border: 1px solid #000; flex: none; }
 .dot.on { background: var(--green); }
 .dot.wait { background: var(--gold); }
 .dot.err { background: var(--red); }
 #obsLink { font-size: 12px; word-break: break-all; background: #12191e; border: 2px solid var(--line); padding: 8px; color: var(--ink); user-select: all; }
+summary.hint { cursor: pointer; }
 
 body.obs #panel, body.clean #panel { display: none; }
 body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
@@ -123,20 +161,20 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     <div class="card">
       <div class="plat"><span><span class="sw" style="background:var(--twitch)"></span>Twitch</span><span class="status"><span class="dot" id="twDot"></span><span id="twStatus">Off</span></span></div>
       <div class="row">
-        <input id="twChannel" class="grow" type="text" placeholder="your channel name" autocomplete="off">
+        <input id="twChannel" class="grow" type="text" placeholder="your channel name" autocomplete="off" aria-label="Twitch channel name">
         <button id="twBtn" class="sm go" type="button">Connect</button>
       </div>
     </div>
 
     <div class="card">
-      <div class="plat"><span><span class="sw" style="background:var(--yt)"></span><span class="sw" style="background:var(--tt)"></span>YouTube + TikTok</span><span class="status"><span class="dot" id="ssDot"></span><span id="ssStatus">Off</span></span></div>
+      <div class="plat"><span><span class="sw" style="background:var(--yt)"></span><span class="sw" style="background:var(--tt); box-shadow: inset 0 0 0 2px #25f4ee"></span> YouTube + TikTok</span><span class="status"><span class="dot" id="ssDot"></span><span id="ssStatus">Off</span></span></div>
       <div class="row">
-        <input id="ssSession" class="grow" type="text" placeholder="Social Stream session ID" autocomplete="off">
+        <input id="ssSession" class="grow" type="text" placeholder="Social Stream session ID" autocomplete="off" aria-label="Social Stream session ID">
         <button id="ssBtn" class="sm go" type="button">Connect</button>
       </div>
       <p class="hint">Uses the free <a href="https://socialstream.ninja/" target="_blank" rel="noopener">Social Stream Ninja</a> extension. No API key needed.</p>
       <details>
-        <summary class="hint" style="cursor:pointer">Step by step</summary>
+        <summary class="hint">Step by step</summary>
         <ol class="hint" style="padding-left:18px; margin:8px 0 0; display:flex; flex-direction:column; gap:6px">
           <li>In Chrome, install <b>Social Stream Ninja</b> from the <a href="https://chromewebstore.google.com/search/social%20stream%20ninja" target="_blank" rel="noopener">Chrome Web Store</a>.</li>
           <li>Click its icon in the toolbar and turn it <b>on</b>.</li>
@@ -150,28 +188,78 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   </section>
 
   <section class="sec">
-    <h2>Look</h2>
+    <h2>Style</h2>
+    <label>Theme</label>
+    <div class="seg" id="themeSeg">
+      <button type="button" data-theme="clean">Clean</button>
+      <button type="button" data-theme="boxed">Boxed</button>
+      <button type="button" data-theme="chunky">Chunky</button>
+    </div>
+    <div class="grid2">
+      <label>Font
+        <select id="font">
+          <option value="mc">Minecraft</option>
+          <option value="ui">Regular</option>
+          <option value="mono">Typewriter</option>
+        </select>
+      </label>
+      <label>Animation
+        <select id="anim">
+          <option value="up">Slide up</option>
+          <option value="left">Slide from left</option>
+          <option value="right">Slide from right</option>
+          <option value="fade">Fade in</option>
+          <option value="none">None</option>
+        </select>
+      </label>
+      <label>Hide messages
+        <select id="hide">
+          <option value="0">Never</option>
+          <option value="10">After 10 sec</option>
+          <option value="20">After 20 sec</option>
+          <option value="30">After 30 sec</option>
+          <option value="60">After 1 min</option>
+        </select>
+      </label>
+      <label>Line up
+        <select id="align">
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+        </select>
+      </label>
+    </div>
     <label>Text size <span class="val" id="sizeVal"></span>
-      <input id="size" type="range" min="14" max="96" step="2" value="32">
+      <input id="size" type="range" min="14" max="80" step="2" value="28">
     </label>
-    <label class="grow">Messages on screen
-      <input id="maxMsgs" type="number" min="1" max="100" value="12">
-    </label>
-    <label class="check"><input id="badges" type="checkbox" checked> Show platform tags</label>
-    <label class="check"><input id="fade" type="checkbox"> Fade out old messages after 30 seconds</label>
+    <div class="grid2">
+      <label>Max messages
+        <input id="maxMsgs" type="number" min="1" max="100" value="12">
+      </label>
+      <label>Colors
+        <div class="row">
+          <input id="textColor" type="color" value="#ffffff" title="Message text color" aria-label="Message text color">
+          <input id="boxColor" type="color" value="#11181d" title="Box color (Boxed theme)" aria-label="Box color">
+        </div>
+      </label>
+    </div>
+    <label class="check"><input id="icons" type="checkbox" checked> Show platform icons</label>
+    <label class="check"><input id="badges" type="checkbox" checked> Show mod, VIP and sub badges (Twitch)</label>
     <div>
-      <label>Background</label>
+      <label>Preview background</label>
       <div class="row" style="margin-top:4px">
         <button class="sm grow" type="button" data-bg="#9fd8f5">Light blue</button>
-        <button class="sm grow" type="button" data-bg="#1e272e">Dark</button>
-        <input id="bgColor" type="color" value="#9fd8f5" aria-label="Background color">
+        <button class="sm grow" type="button" data-bg="#2a2f3a">Dark</button>
+        <button class="sm grow" type="button" data-bg="#4a7a3a">Game</button>
+        <input id="bgColor" type="color" value="#9fd8f5" aria-label="Preview background color">
       </div>
+      <p class="hint" style="margin-top:6px">Only for this screen. In OBS the background is always see-through.</p>
     </div>
+    <button id="demo" type="button">Show example chat</button>
   </section>
 
   <section class="sec">
     <h2>OBS</h2>
-    <p class="hint">Add a <b>Browser</b> source in OBS and paste this link. It has your settings built in, has a see-through background and hides this panel.</p>
+    <p class="hint">Add a <b>Browser</b> source in OBS (width 600, height 800 works well) and paste this link. It has your settings built in, a see-through background, and no panel. Copy it again after you change settings.</p>
     <div id="obsLink"></div>
     <button id="copyObs" class="go" type="button">Copy OBS link</button>
   </section>
@@ -194,55 +282,77 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   const OBS = params.has('obs');
 
   // ---------- settings: from the link (OBS) or this browser ----------
-  const KEY = 'lethal-chat-v1';
+  const KEY = 'lethal-chat-v2';
+  const DEFAULTS = { twitch: '', ss: '', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, bg: '#9fd8f5' };
   let saved = {};
-  if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {} }
-  const S = Object.assign({ twitch: '', ss: '', size: 32, max: 12, badges: true, fade: false, bg: '#9fd8f5' }, saved);
+  if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lethal-chat-v1') || '{}') || {}; } catch (e) {} }
+  const S = Object.assign({}, DEFAULTS, saved);
+  const LINK_KEYS = ['twitch', 'ss', 'theme', 'font', 'anim', 'hide', 'align', 'size', 'max', 'text', 'box', 'icons', 'badges'];
   if (OBS) {
-    ['twitch', 'ss'].forEach(k => { if (params.get(k)) S[k] = params.get(k); });
-    if (params.get('size')) S.size = +params.get('size') || S.size;
-    if (params.get('max')) S.max = +params.get('max') || S.max;
-    if (params.has('nobadges')) S.badges = false;
-    if (params.has('fade')) S.fade = true;
+    LINK_KEYS.forEach(k => {
+      if (!params.has(k)) return;
+      const v = params.get(k), d = DEFAULTS[k];
+      S[k] = typeof d === 'number' ? (+v || d) : typeof d === 'boolean' ? v !== '0' : v;
+    });
   }
   function save() { if (OBS) return; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} updateObsLink(); }
 
+  const FONTS = { mc: 'var(--mc)', ui: 'var(--ui)', mono: '"Courier New", Courier, monospace' };
+  const hex = c => /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : null;
   function applyLook() {
-    document.documentElement.style.setProperty('--size', S.size + 'px');
+    const b = document.body, r = document.documentElement.style;
+    ['clean', 'boxed', 'chunky'].forEach(t => b.classList.toggle('theme-' + t, S.theme === t));
+    b.classList.toggle('font-mc', S.font === 'mc');
+    b.classList.toggle('no-icons', !S.icons);
+    b.classList.toggle('align-right', S.align === 'right');
+    r.setProperty('--chat-font', FONTS[S.font] || FONTS.mc);
+    r.setProperty('--size', S.size + 'px');
+    r.setProperty('--text', hex(S.text) || '#ffffff');
+    const bx = hex(S.box) || '#11181d';
+    r.setProperty('--box', 'rgba(' + parseInt(bx.slice(1, 3), 16) + ',' + parseInt(bx.slice(3, 5), 16) + ',' + parseInt(bx.slice(5, 7), 16) + ',.78)');
+    if (OBS) { r.background = 'transparent'; b.style.background = 'transparent'; }
+    else { b.style.background = S.bg; $('bgColor').value = hex(S.bg) || '#9fd8f5'; }
+    document.querySelectorAll('[data-theme]').forEach(x => x.classList.toggle('on', x.dataset.theme === S.theme));
+    $('font').value = S.font; $('anim').value = S.anim; $('hide').value = String(S.hide); $('align').value = S.align;
     $('size').value = S.size; $('sizeVal').textContent = S.size + 'px';
-    $('maxMsgs').value = S.max; $('badges').checked = S.badges; $('fade').checked = S.fade;
-    document.body.classList.toggle('hide-badges', !S.badges);
-    if (OBS) { document.documentElement.style.background = 'transparent'; document.body.style.background = 'transparent'; }
-    else { document.body.style.background = S.bg; $('bgColor').value = S.bg; }
-    document.querySelectorAll('[data-bg]').forEach(b => b.classList.toggle('on', b.dataset.bg === S.bg));
+    $('maxMsgs').value = S.max; $('textColor').value = hex(S.text) || '#ffffff'; $('boxColor').value = bx;
+    $('icons').checked = S.icons; $('badges').checked = S.badges;
     trim();
   }
-  $('size').addEventListener('input', e => { S.size = +e.target.value; applyLook(); save(); });
-  $('maxMsgs').addEventListener('input', e => { S.max = Math.max(1, Math.min(100, +e.target.value || 1)); applyLook(); save(); });
-  $('badges').addEventListener('change', e => { S.badges = e.target.checked; applyLook(); save(); });
-  $('fade').addEventListener('change', e => { S.fade = e.target.checked; save(); });
-  document.querySelectorAll('[data-bg]').forEach(b => b.onclick = () => { S.bg = b.dataset.bg; applyLook(); save(); });
-  $('bgColor').addEventListener('input', e => { S.bg = e.target.value; applyLook(); save(); });
+  const set = (k, v) => { S[k] = v; applyLook(); save(); };
+  document.querySelectorAll('[data-theme]').forEach(x => x.onclick = () => set('theme', x.dataset.theme));
+  $('font').onchange = e => set('font', e.target.value);
+  $('anim').onchange = e => set('anim', e.target.value);
+  $('hide').onchange = e => set('hide', +e.target.value);
+  $('align').onchange = e => set('align', e.target.value);
+  $('size').oninput = e => set('size', +e.target.value);
+  $('maxMsgs').oninput = e => set('max', Math.max(1, Math.min(100, +e.target.value || 1)));
+  $('textColor').oninput = e => set('text', e.target.value);
+  $('boxColor').oninput = e => set('box', e.target.value);
+  $('icons').onchange = e => set('icons', e.target.checked);
+  $('badges').onchange = e => set('badges', e.target.checked);
+  document.querySelectorAll('[data-bg]').forEach(x => x.onclick = () => set('bg', x.dataset.bg));
+  $('bgColor').oninput = e => set('bg', e.target.value);
 
   // ---------- panel ----------
   if (OBS) document.body.classList.add('obs');
   $('hideBtn').onclick = () => document.body.classList.add('clean');
   $('showPanel').onclick = () => document.body.classList.remove('clean');
   document.addEventListener('keydown', e => {
-    if (/INPUT|TEXTAREA/.test(e.target.tagName) || OBS) return;
+    if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || OBS) return;
     if (e.key === 'h' || e.key === 'H') document.body.classList.toggle('clean');
   });
 
   // ---------- OBS link ----------
   function obsUrl() {
-    const u = new URL(location.href.split('?')[0].split('#')[0]);
-    u.searchParams.set('obs', '');
-    if (S.twitch) u.searchParams.set('twitch', S.twitch);
-    if (S.ss) u.searchParams.set('ss', S.ss);
-    u.searchParams.set('size', S.size); u.searchParams.set('max', S.max);
-    if (!S.badges) u.searchParams.set('nobadges', '');
-    if (S.fade) u.searchParams.set('fade', '');
-    return u.toString().replace('obs=&', 'obs&').replace(/obs=$/, 'obs').replace('nobadges=', 'nobadges').replace('fade=', 'fade');
+    const base = location.href.split('?')[0].split('#')[0];
+    const parts = ['obs'];
+    LINK_KEYS.forEach(k => {
+      const v = S[k];
+      if (v === DEFAULTS[k] || v === '' || v == null) return;
+      parts.push(k + '=' + encodeURIComponent(typeof v === 'boolean' ? (v ? '1' : '0') : v));
+    });
+    return base + '?' + parts.join('&');
   }
   function updateObsLink() { $('obsLink').textContent = obsUrl(); }
   $('copyObs').onclick = () => {
@@ -253,21 +363,34 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   };
 
   // ---------- messages ----------
-  const safeColor = c => /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : null;
-  const DEFAULT_NAME = { twitch: '#d9c2ff', youtube: '#ffb3ae', tiktok: '#a8fbf8', test: '#f6c945' };
-  const TAG = { twitch: 'TWITCH', youtube: 'YT', tiktok: 'TIKTOK', test: 'TEST' };
-  function trim() { while (lines.children.length > S.max) lines.firstChild.remove(); }
+  const SVG = {
+    twitch: '<svg viewBox="0 0 16 16" fill="#fff"><path d="M2 1 1 4v10h3.5v2h2l2-2h3l3.5-3.5V1H2zm11.5 8.8-2 2h-3.3l-2 2v-2H3.5V2.5h10v7.3z"/><path d="M10.5 4.5H12v4h-1.5zm-4 0H8v4H6.5z"/></svg>',
+    youtube: '<svg viewBox="0 0 16 16" fill="#fff"><path d="M5.5 3.5v9l7.5-4.5z"/></svg>',
+    tiktok: '<svg viewBox="0 0 16 16" fill="#fff"><path d="M9.5 1h2.2c.2 1.6 1.2 2.7 2.8 2.9v2.3c-1.1 0-2.1-.3-2.9-.9v5.2A4.5 4.5 0 1 1 7.1 6v2.4a2.2 2.2 0 1 0 2.4 2.2V1z"/></svg>',
+    test: '<svg viewBox="0 0 16 16" fill="#fff"><circle cx="8" cy="8" r="4"/></svg>'
+  };
+  const DEFAULT_NAME = { twitch: '#bf94ff', youtube: '#ff7a7a', tiktok: '#5ff5f0', test: '#f6c945' };
+  const NAME_POOL = ['#ff6b6b', '#ffa94d', '#ffd43b', '#69db7c', '#4dabf7', '#9775fa', '#f783ac', '#3bc9db'];
+  const poolColor = n => { let h = 0; for (const c of n) h = (h * 31 + c.charCodeAt(0)) >>> 0; return NAME_POOL[h % NAME_POOL.length]; };
+
+  function trim() {
+    const live = [...lines.children].filter(x => !x.classList.contains('leaving'));
+    live.slice(0, Math.max(0, live.length - S.max)).forEach(x => x.remove());
+  }
   function addMessage(m) {
     if (!m.text) return;
     $('empty').hidden = true;
-    const row = document.createElement('div'); row.className = 'msg';
-    if (S.fade) { row.classList.add('fade'); row.style.setProperty('--life', '30s'); }
-    const badge = document.createElement('span'); badge.className = 'badge ' + m.platform; badge.textContent = TAG[m.platform];
+    const row = document.createElement('div');
+    row.className = 'msg' + (S.anim !== 'none' ? ' in-' + S.anim : '');
+    const icon = document.createElement('span'); icon.className = 'icon ' + m.platform; icon.innerHTML = SVG[m.platform] || SVG.test; icon.title = m.platform;
+    row.appendChild(icon);
+    if (S.badges && m.badges) m.badges.forEach(bd => { const s = document.createElement('span'); s.className = 'badge ' + bd; s.textContent = bd.toUpperCase(); row.appendChild(s); });
     const name = document.createElement('span'); name.className = 'name'; name.textContent = m.name;
-    name.style.color = safeColor(m.color) || DEFAULT_NAME[m.platform];
-    const text = document.createElement('span'); text.textContent = m.text;
-    row.append(badge, name, text);
+    name.style.color = hex(m.color) || (m.platform === 'twitch' ? poolColor(m.name) : DEFAULT_NAME[m.platform] || '#fff');
+    const text = document.createElement('span'); text.className = 'text'; text.textContent = m.text;
+    row.append(name, text);
     lines.appendChild(row); trim();
+    if (S.hide > 0) setTimeout(() => { row.classList.add('leaving'); setTimeout(() => row.remove(), 500); }, S.hide * 1000);
   }
 
   function setStatus(p, state, text) { $(p + 'Dot').className = 'dot' + (state ? ' ' + state : ''); $(p + 'Status').textContent = text; }
@@ -275,8 +398,9 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 
   // ---------- Twitch (reads chat anonymously) ----------
   let tw = null, twOn = false;
+  const cleanChan = v => v.trim().toLowerCase().replace(/.*twitch\.tv\//, '').replace(/^[#@]/, '').split(/[/?]/)[0];
   function twConnect() {
-    const chan = $('twChannel').value.trim().toLowerCase().replace(/.*twitch\.tv\//, '').replace(/^[#@]/, '').split(/[/?]/)[0];
+    const chan = cleanChan($('twChannel').value);
     if (!chan) { setStatus('tw', 'err', 'Type your channel name'); return; }
     S.twitch = chan; $('twChannel').value = chan; save();
     twOn = true; setBtn('tw', true); setStatus('tw', 'wait', 'Connecting…');
@@ -296,7 +420,12 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
       if (m) {
         let text = m[2];
         if (text.startsWith('\u0001ACTION ')) text = text.slice(8, -1);
-        addMessage({ platform: 'twitch', name: (tags['display-name'] || m[1]).replace(/\\s/g, ' '), color: tags.color, text });
+        const b = tags.badges || '', badges = [];
+        if (/broadcaster\//.test(b)) badges.push('host');
+        if (/moderator\//.test(b)) badges.push('mod');
+        if (/vip\//.test(b)) badges.push('vip');
+        if (/subscriber\/|founder\//.test(b)) badges.push('sub');
+        addMessage({ platform: 'twitch', name: (tags['display-name'] || m[1]).replace(/\\s/g, ' '), color: tags.color, badges, text });
       }
     });
     tw.onclose = () => { if (twOn) { setStatus('tw', 'wait', 'Reconnecting…'); setTimeout(() => { if (twOn) twConnect(); }, 3000); } };
@@ -304,7 +433,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   function twOff() { twOn = false; if (tw) { tw.onclose = null; tw.close(); } setBtn('tw', false); setStatus('tw', '', 'Off'); }
   $('twBtn').onclick = () => twOn ? twOff() : twConnect();
 
-  // ---------- YouTube + TikTok (and more) through Social Stream Ninja ----------
+  // ---------- YouTube + TikTok through Social Stream Ninja ----------
   let ss = null, ssOn = false;
   const toText = html => {
     const doc = new DOMParser().parseFromString('<div>' + String(html || '') + '</div>', 'text/html');
@@ -324,8 +453,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
       let j; try { j = JSON.parse(ev.data); } catch (e) { return; }
       const m = j && j.overlayNinja ? j.overlayNinja : j;
       if (!m || !m.chatmessage || m.event) return;
-      const type = String(m.type || '').toLowerCase();
-      const platform = PLAT[type];
+      const platform = PLAT[String(m.type || '').toLowerCase()];
       if (!platform) return;
       if (platform === 'twitch' && twOn) return; // already reading Twitch directly
       const text = toText(m.chatmessage); if (!text) return;
@@ -337,7 +465,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   function ssOff() { ssOn = false; if (ss) { ss.onclose = null; ss.close(); } setBtn('ss', false); setStatus('ss', '', 'Off'); }
   $('ssBtn').onclick = () => ssOn ? ssOff() : ssConnect();
 
-  // ---------- test ----------
+  // ---------- test + example ----------
   function sendTest() {
     const text = $('testMsg').value.trim(); if (!text) return;
     addMessage({ platform: 'test', name: $('testName').value.trim() || 'Steve', text });
@@ -345,16 +473,23 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   }
   $('testSend').onclick = sendTest;
   $('testMsg').addEventListener('keydown', e => { if (e.key === 'Enter') sendTest(); });
+  const EXAMPLE = [
+    { platform: 'twitch', name: 'CreeperHunter', badges: ['mod'], text: 'welcome back everyone!' },
+    { platform: 'youtube', name: 'Diamond Digger', text: 'first time catching the stream live' },
+    { platform: 'tiktok', name: 'blocky.builds', text: 'that build is insane' },
+    { platform: 'twitch', name: 'RedstoneRae', badges: ['sub'], text: 'gg' },
+    { platform: 'youtube', name: 'NetherNick', text: 'what seed is this?' },
+    { platform: 'tiktok', name: 'endermanfan22', text: 'hi from tiktok!!' }
+  ];
+  $('demo').onclick = () => EXAMPLE.forEach((m, i) => setTimeout(() => addMessage(m), i * 350));
 
   // ---------- start ----------
   $('twChannel').value = S.twitch; $('ssSession').value = S.ss;
-  $('twChannel').addEventListener('change', e => { S.twitch = e.target.value.trim().toLowerCase().replace(/.*twitch\.tv\//, '').replace(/^[#@]/, '').split(/[/?]/)[0]; save(); });
+  $('twChannel').addEventListener('change', e => { S.twitch = cleanChan(e.target.value); save(); });
   $('ssSession').addEventListener('change', e => { S.ss = e.target.value.trim(); save(); });
   applyLook(); updateObsLink();
-  if (OBS) {
-    if (S.twitch) twConnect();
-    if (S.ss) ssConnect();
-  }
+  if (OBS) { if (S.twitch) twConnect(); if (S.ss) ssConnect(); }
+  else if (!S.twitch && !S.ss) EXAMPLE.forEach(m => addMessage(Object.assign({}, m)));
 })();
 </script>
 </body>
