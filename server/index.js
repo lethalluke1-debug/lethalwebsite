@@ -13,6 +13,7 @@ const MAX_SOURCES = 30;
 const debug = new Map(); // key -> { log:[], counts:{} }
 function dbg(key) { if (!debug.has(key)) debug.set(key, { log: [], counts: {} }); return debug.get(key); }
 function note(key, line) { const d = dbg(key); d.log.push(new Date().toISOString().slice(11, 19) + ' ' + line); if (d.log.length > 40) d.log.shift(); console.log('[' + key + '] ' + line); }
+function src_count(key) { const s = sources.get(key); return s ? s.subs.size : 0; }
 function count(key, what) { const c = dbg(key).counts; c[what] = (c[what] || 0) + 1; }
 
 // ---------- shared sources: one reader per channel, shared by every open page ----------
@@ -66,7 +67,10 @@ function tiktokSource(username) {
       conn.on(WebcastEvent.CHAT, d => {
         count(K, 'chat');
         const u = d.user || {};
-        if (d.comment) emit({ type: 'chat', platform: 'tiktok', name: u.nickname || u.uniqueId || 'viewer', text: String(d.comment) });
+        const text = d.comment || d.content || '';
+        const name = u.nickname || u.uniqueId || d.nickname || d.uniqueId || 'viewer';
+        if (dbg(K).counts.chat <= 5) note(K, 'chat from ' + name + ': ' + JSON.stringify(String(text)).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
+        if (text) emit({ type: 'chat', platform: 'tiktok', name, text: String(text) });
       });
       conn.on(WebcastEvent.STREAM_END, () => { status('wait', 'Live ended, waiting for next live'); retry(); });
       conn.on('disconnected', () => { if (!stopped) { status('wait', 'Reconnecting…'); retry(10_000); } });
@@ -173,17 +177,22 @@ function youtubeSource(handle) {
         const yt = await getInnertube();
         const info = await yt.getInfo(id);
         chat = info.getLiveChat();
-        chat.on('start', () => status('on', 'Live'));
+        chat.on('start', () => {
+          status('on', 'Live');
+          try { chat.applyFilter('LIVE_CHAT'); note(K, 'switched to all live chat'); } catch (e) { note(K, 'filter: ' + e.message); }
+        });
         chat.on('chat-update', action => {
           count(K, 'update:' + action.type);
           if (action.type !== 'AddChatItemAction' || !action.item) return;
           const item = action.item;
+          count(K, 'item:' + item.type);
           if (item.type !== 'LiveChatTextMessage' && item.type !== 'LiveChatPaidMessage') return;
           const text = item.message ? item.message.toString() : '';
           const name = item.author && item.author.name ? String(item.author.name) : 'viewer';
           const badges = [];
           if (item.author && item.author.is_moderator) badges.push('mod');
           if (item.author && item.author.badges && item.author.badges.some(b => /member/i.test(String(b.tooltip || '')))) badges.push('sub');
+          if ((dbg(K).counts['item:' + item.type] || 0) <= 3) note(K, 'chat from ' + name + ': ' + JSON.stringify(text).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
           if (text) emit({ type: 'chat', platform: 'youtube', name: name.replace(/^@/, ''), text, badges });
         });
         chat.on('end', () => { status('wait', 'Live ended, waiting for next live'); retry(); });
