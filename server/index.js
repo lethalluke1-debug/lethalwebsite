@@ -2,12 +2,18 @@
 // The website connects with: wss://<this server>/chat?youtube=@handle&tiktok=username
 import http from 'node:http';
 import { WebSocketServer } from 'ws';
-import { TikTokLiveConnection, WebcastEvent, UserOfflineError } from 'tiktok-live-connector';
+import { TikTokLiveConnection, WebcastEvent, ControlEvent, UserOfflineError } from 'tiktok-live-connector';
 import { Innertube } from 'youtubei.js';
 
 const PORT = process.env.PORT || 10000;
 const RETRY_OFFLINE_MS = 60_000;
 const MAX_SOURCES = 30;
+
+// ---------- debug info (open /debug on the server to see it) ----------
+const debug = new Map(); // key -> { log:[], counts:{} }
+function dbg(key) { if (!debug.has(key)) debug.set(key, { log: [], counts: {} }); return debug.get(key); }
+function note(key, line) { const d = dbg(key); d.log.push(new Date().toISOString().slice(11, 19) + ' ' + line); if (d.log.length > 40) d.log.shift(); console.log('[' + key + '] ' + line); }
+function count(key, what) { const c = dbg(key).counts; c[what] = (c[what] || 0) + 1; }
 
 // ---------- shared sources: one reader per channel, shared by every open page ----------
 const sources = new Map(); // key -> { subs:Set<ws>, stop(), status }
@@ -43,14 +49,22 @@ function subscribe(key, ws, create) {
 
 // ---------- TikTok ----------
 function tiktokSource(username) {
+  const K = 'tiktok:' + username;
   return emit => {
     let stopped = false, conn = null, timer = null;
-    const status = (state, text) => emit({ type: 'status', platform: 'tiktok', state, text });
+    const status = (state, text) => { note(K, 'status ' + state + ': ' + text); emit({ type: 'status', platform: 'tiktok', state, text }); };
     const start = async () => {
       if (stopped) return;
       status('wait', 'Connecting to @' + username + '…');
       conn = new TikTokLiveConnection(username, { processInitialData: false });
+      conn.on(ControlEvent.WEBSOCKET_CONNECTED, () => note(K, 'websocket connected'));
+      conn.on(ControlEvent.ERROR, e => note(K, 'error: ' + String((e && (e.exception && e.exception.message || e.info || e.message)) || e).slice(0, 200)));
+      conn.on(ControlEvent.WEBSOCKET_DATA, () => count(K, 'websocketData'));
+      conn.on(WebcastEvent.MEMBER, () => count(K, 'member'));
+      conn.on(WebcastEvent.LIKE, () => count(K, 'like'));
+      conn.on(WebcastEvent.ROOM_USER, () => count(K, 'roomUser'));
       conn.on(WebcastEvent.CHAT, d => {
+        count(K, 'chat');
         const u = d.user || {};
         if (d.comment) emit({ type: 'chat', platform: 'tiktok', name: u.nickname || u.uniqueId || 'viewer', text: String(d.comment) });
       });
@@ -60,6 +74,7 @@ function tiktokSource(username) {
         await conn.connect();
         status('on', 'Live: @' + username);
       } catch (e) {
+        note(K, 'connect failed: ' + String((e && e.message) || e).slice(0, 200));
         if (e instanceof UserOfflineError || /offline|not live|isn't live/i.test(String(e && e.message))) status('wait', '@' + username + ' isn\'t live yet. Checking every minute');
         else status('err', 'Couldn\'t connect: ' + String((e && e.message) || e).slice(0, 80));
         retry();
@@ -79,7 +94,45 @@ function tiktokSource(username) {
 let innertube = null;
 const getInnertube = async () => innertube || (innertube = await Innertube.create({ retrieve_player: false }));
 
-async function findLiveVideoId(input) {
+async function findLiveViaInnertube(input, K) {
+  const yt = await getInnertube();
+  let browseId = (input.match(/(UC[\w-]{22})/) || [])[1];
+  if (!browseId) {
+    const handle = '@' + input.replace(/^.*youtube\.com\//, '').replace(/^@/, '').split(/[/?]/)[0];
+    const ep = await yt.resolveURL('https://www.youtube.com/' + handle);
+    browseId = ep && ep.payload && ep.payload.browseId;
+    note(K, 'handle ' + handle + ' -> channel ' + browseId);
+  }
+  if (!browseId) throw new Error('Couldn\'t find that YouTube channel');
+  const channel = await yt.getChannel(browseId);
+  let tab;
+  try { tab = await channel.getLiveStreams(); } catch (e) { note(K, 'no live tab: ' + e.message); return null; }
+  const vids = tab.videos || [];
+  note(K, 'live tab has ' + vids.length + ' items');
+  for (const v of vids) {
+    let live = false;
+    try { live = !!v.is_live; } catch (e) {}
+    if (!live) { try { live = /"(LIVE|BADGE_STYLE_TYPE_LIVE_NOW)"|LIVE NOW/i.test(JSON.stringify(v)); } catch (e) {} }
+    const id = v.video_id || v.id || (v.content_id);
+    if (live && id) return id;
+  }
+  return null;
+}
+
+async function findLiveVideoId(input, K) {
+  const direct0 = input.trim().match(/(?:v=|youtu\.be\/|\/live\/|\/shorts\/|\/embed\/)([\w-]{11})/) || input.trim().match(/^([\w-]{11})$/);
+  if (direct0) return direct0[1];
+  try {
+    const id = await findLiveViaInnertube(input, K);
+    note(K, 'innertube search found: ' + id);
+    if (id) return id;
+  } catch (e) { note(K, 'innertube search failed: ' + String(e && e.message).slice(0, 200)); }
+  const id = await findLiveViaPage(input, K);
+  note(K, 'page search found: ' + id);
+  return id;
+}
+
+async function findLiveViaPage(input, K) {
   input = input.trim();
   const direct = input.match(/(?:v=|youtu\.be\/|\/live\/|\/shorts\/|\/embed\/)([\w-]{11})/) || input.match(/^([\w-]{11})$/);
   if (direct) return direct[1];
@@ -92,6 +145,7 @@ async function findLiveVideoId(input) {
   });
   if (res.status === 404) throw new Error('Couldn\'t find that YouTube channel');
   const html = await res.text();
+  note(K, 'live page status ' + res.status + ', ' + html.length + ' bytes' + (/not a bot|consent\.youtube/i.test(html) ? ' (YouTube bot check!)' : ''));
   const canon = html.match(/<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/);
   if (!canon) return null;
   if (!/"isLive":true|"isLiveNow":true|"liveBroadcastDetails"/.test(html)) return null;
@@ -99,9 +153,10 @@ async function findLiveVideoId(input) {
 }
 
 function youtubeSource(handle) {
+  const K = 'youtube:' + handle.toLowerCase();
   return emit => {
     let stopped = false, chat = null, timer = null;
-    const status = (state, text) => emit({ type: 'status', platform: 'youtube', state, text });
+    const status = (state, text) => { note(K, 'status ' + state + ': ' + text); emit({ type: 'status', platform: 'youtube', state, text }); };
     const retry = (ms = RETRY_OFFLINE_MS) => {
       clearTimeout(timer);
       try { chat && chat.stop(); } catch (e) {}
@@ -112,13 +167,15 @@ function youtubeSource(handle) {
       if (stopped) return;
       status('wait', 'Looking for your live stream…');
       try {
-        const id = await findLiveVideoId(handle);
+        const id = await findLiveVideoId(handle, K);
+        note(K, 'using video ' + id);
         if (!id) { status('wait', 'Not live yet. Checking every minute'); return retry(); }
         const yt = await getInnertube();
         const info = await yt.getInfo(id);
         chat = info.getLiveChat();
         chat.on('start', () => status('on', 'Live'));
         chat.on('chat-update', action => {
+          count(K, 'update:' + action.type);
           if (action.type !== 'AddChatItemAction' || !action.item) return;
           const item = action.item;
           if (item.type !== 'LiveChatTextMessage' && item.type !== 'LiveChatPaidMessage') return;
@@ -130,9 +187,11 @@ function youtubeSource(handle) {
           if (text) emit({ type: 'chat', platform: 'youtube', name: name.replace(/^@/, ''), text, badges });
         });
         chat.on('end', () => { status('wait', 'Live ended, waiting for next live'); retry(); });
-        chat.on('error', e => { status('wait', 'Reconnecting…'); retry(15_000); });
+        chat.on('error', e => {
+          note(K, 'chat error: ' + String((e && e.message) || e).slice(0, 200)); status('wait', 'Reconnecting…'); retry(15_000); });
         chat.start();
       } catch (e) {
+        note(K, 'failed: ' + String((e && e.stack) || e).slice(0, 300));
         status('err', String((e && e.message) || e).slice(0, 80) + '. Trying again soon');
         retry();
       }
@@ -144,6 +203,13 @@ function youtubeSource(handle) {
 
 // ---------- server ----------
 const server = http.createServer((req, res) => {
+  if (req.url.startsWith('/debug')) {
+    const out = {};
+    for (const [k, d] of debug) out[k] = { open_pages: sources.has(k) ? sources.get(k).subs.size : 0, counts: d.counts, log: d.log };
+    res.writeHead(200, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
+    res.end(JSON.stringify(out, null, 2));
+    return;
+  }
   res.writeHead(200, { 'content-type': 'text/plain', 'access-control-allow-origin': '*' });
   res.end('Lethal Chat server is running.');
 });
