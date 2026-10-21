@@ -130,6 +130,8 @@ button.sm { padding: 5px 9px; font-size: 12px; }
 .dot.err { background: var(--red); }
 #obsLink { font-size: 12px; word-break: break-all; background: #12191e; border: 2px solid var(--line); padding: 8px; color: var(--ink); user-select: all; }
 summary.hint { cursor: pointer; }
+details.card { gap: 8px; }
+details.card[open] > summary { margin-bottom: 2px; }
 
 body.obs #panel, body.clean #panel { display: none; }
 body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
@@ -167,24 +169,24 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     </div>
 
     <div class="card">
-      <div class="plat"><span><span class="sw" style="background:var(--yt)"></span><span class="sw" style="background:var(--tt); box-shadow: inset 0 0 0 2px #25f4ee"></span> YouTube + TikTok</span><span class="status"><span class="dot" id="ssDot"></span><span id="ssStatus">Off</span></span></div>
-      <div class="row">
-        <input id="ssSession" class="grow" type="text" placeholder="Social Stream session ID" autocomplete="off" aria-label="Social Stream session ID">
-        <button id="ssBtn" class="sm go" type="button">Connect</button>
-      </div>
-      <p class="hint">Uses the free <a href="https://socialstream.ninja/" target="_blank" rel="noopener">Social Stream Ninja</a> extension. No API key needed.</p>
-      <details>
-        <summary class="hint">Step by step</summary>
-        <ol class="hint" style="padding-left:18px; margin:8px 0 0; display:flex; flex-direction:column; gap:6px">
-          <li>In Chrome, install <b>Social Stream Ninja</b> from the <a href="https://chromewebstore.google.com/search/social%20stream%20ninja" target="_blank" rel="noopener">Chrome Web Store</a>.</li>
-          <li>Click its icon in the toolbar and turn it <b>on</b>.</li>
-          <li>Copy the <b>session ID</b> it shows and paste it in the box above.</li>
-          <li>In its settings, open <b>Global settings → Mechanics</b> and turn on <b>Enable remote API control of extension</b> and <b>Send chat messages to API server</b>.</li>
-          <li>Go live. For YouTube, open your stream's <b>pop-out chat</b> (the ⋮ menu on the chat → Pop-out chat). For TikTok, open your own <b>tiktok.com live page</b>.</li>
-          <li>Keep those tabs open while you stream, then press <b>Connect</b> here.</li>
-        </ol>
-      </details>
+      <div class="plat"><span><span class="sw" style="background:var(--yt)"></span>YouTube</span><span class="status"><span class="dot" id="ytDot"></span><span id="ytStatus">Off</span></span></div>
+      <input id="ytHandle" type="text" placeholder="@yourhandle" autocomplete="off" aria-label="YouTube handle">
+      <div class="plat"><span><span class="sw" style="background:var(--tt); box-shadow: inset 0 0 0 2px #25f4ee"></span>TikTok</span><span class="status"><span class="dot" id="ttDot"></span><span id="ttStatus">Off</span></span></div>
+      <input id="ttUser" type="text" placeholder="your TikTok username" autocomplete="off" aria-label="TikTok username">
+      <button id="srvBtn" class="sm go" type="button">Connect YouTube + TikTok</button>
+      <p class="hint">Start your live first. It finds your stream by itself and keeps checking if you're not live yet.</p>
     </div>
+
+    <details class="card" id="srvCard">
+      <summary class="hint"><b>Chat server</b> <span id="srvState">(needed for YouTube + TikTok)</span></summary>
+      <p class="hint">YouTube and TikTok chat comes through your own free chat server. Set it up once:</p>
+      <ol class="hint" style="padding-left:18px; margin:0; display:flex; flex-direction:column; gap:6px">
+        <li>Click <a href="https://render.com/deploy?repo=https://github.com/lethalluke1-debug/lethalwebsite" target="_blank" rel="noopener"><b>Deploy to Render</b></a> and sign in with <b>GitHub</b>.</li>
+        <li>Click <b>Deploy Blueprint</b> (or Apply) and wait for it to say <b>Live</b>. That takes about 3 minutes.</li>
+        <li>Copy your server's address (it looks like <b>https://lethal-chat-server-xxxx.onrender.com</b>) and paste it below.</li>
+      </ol>
+      <input id="srvUrl" type="text" placeholder="https://….onrender.com" autocomplete="off" aria-label="Chat server address">
+    </details>
   </section>
 
   <section class="sec">
@@ -282,12 +284,12 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   const OBS = params.has('obs');
 
   // ---------- settings: from the link (OBS) or this browser ----------
-  const KEY = 'lethal-chat-v2';
-  const DEFAULTS = { twitch: '', ss: '', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, bg: '#9fd8f5' };
+  const KEY = 'lethal-chat-v3';
+  const DEFAULTS = { twitch: '', youtube: '', tiktok: '', server: '', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, bg: '#9fd8f5' };
   let saved = {};
-  if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lethal-chat-v1') || '{}') || {}; } catch (e) {} }
+  if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lethal-chat-v2') || '{}') || {}; } catch (e) {} }
   const S = Object.assign({}, DEFAULTS, saved);
-  const LINK_KEYS = ['twitch', 'ss', 'theme', 'font', 'anim', 'hide', 'align', 'size', 'max', 'text', 'box', 'icons', 'badges'];
+  const LINK_KEYS = ['twitch', 'youtube', 'tiktok', 'server', 'theme', 'font', 'anim', 'hide', 'align', 'size', 'max', 'text', 'box', 'icons', 'badges'];
   if (OBS) {
     LINK_KEYS.forEach(k => {
       if (!params.has(k)) return;
@@ -433,37 +435,47 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   function twOff() { twOn = false; if (tw) { tw.onclose = null; tw.close(); } setBtn('tw', false); setStatus('tw', '', 'Off'); }
   $('twBtn').onclick = () => twOn ? twOff() : twConnect();
 
-  // ---------- YouTube + TikTok through Social Stream Ninja ----------
-  let ss = null, ssOn = false;
-  const toText = html => {
-    const doc = new DOMParser().parseFromString('<div>' + String(html || '') + '</div>', 'text/html');
-    doc.querySelectorAll('script,style').forEach(n => n.remove());
-    doc.querySelectorAll('img').forEach(img => img.replaceWith(img.getAttribute('alt') || ''));
-    return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
-  };
-  const PLAT = { youtube: 'youtube', youtubeshorts: 'youtube', tiktok: 'tiktok', twitch: 'twitch' };
-  function ssConnect() {
-    const session = $('ssSession').value.trim();
-    if (!session) { setStatus('ss', 'err', 'Paste your session ID'); return; }
-    S.ss = session; save();
-    ssOn = true; setBtn('ss', true); setStatus('ss', 'wait', 'Connecting…');
-    ss = new WebSocket('wss://io.socialstream.ninja');
-    ss.onopen = () => { ss.send(JSON.stringify({ join: session, in: 4, out: 3 })); setStatus('ss', 'on', 'Connected, waiting for chat'); };
-    ss.onmessage = ev => {
-      let j; try { j = JSON.parse(ev.data); } catch (e) { return; }
-      const m = j && j.overlayNinja ? j.overlayNinja : j;
-      if (!m || !m.chatmessage || m.event) return;
-      const platform = PLAT[String(m.type || '').toLowerCase()];
-      if (!platform) return;
-      if (platform === 'twitch' && twOn) return; // already reading Twitch directly
-      const text = toText(m.chatmessage); if (!text) return;
-      setStatus('ss', 'on', 'Live');
-      addMessage({ platform, name: toText(m.chatname) || 'viewer', color: m.nameColor, text });
-    };
-    ss.onclose = () => { if (ssOn) { setStatus('ss', 'wait', 'Reconnecting…'); setTimeout(() => { if (ssOn) ssConnect(); }, 4000); } };
+  // ---------- YouTube + TikTok through the chat server ----------
+  let srv = null, srvOn = false;
+  const cleanTt = v => v.trim().replace(/^.*tiktok\.com\//, '').replace(/^@/, '').split(/[/?]/)[0].toLowerCase();
+  function serverWs(url) {
+    url = url.trim().replace(/\/+$/, '');
+    if (!/^https?:\/\/|^wss?:\/\//.test(url)) url = 'https://' + url;
+    return url.replace(/^http/, 'ws') + '/chat';
   }
-  function ssOff() { ssOn = false; if (ss) { ss.onclose = null; ss.close(); } setBtn('ss', false); setStatus('ss', '', 'Off'); }
-  $('ssBtn').onclick = () => ssOn ? ssOff() : ssConnect();
+  function setSrvBtn(on) { $('srvBtn').textContent = on ? 'Disconnect YouTube + TikTok' : 'Connect YouTube + TikTok'; $('srvBtn').className = 'sm ' + (on ? 'stop' : 'go'); }
+  function srvConnect() {
+    const yt = $('ytHandle').value.trim(), tt = cleanTt($('ttUser').value), url = $('srvUrl').value.trim();
+    S.youtube = yt; S.tiktok = tt; S.server = url; save();
+    if (!yt && !tt) { setStatus('yt', 'err', 'Type your handle'); setStatus('tt', 'err', 'or your username'); return; }
+    if (!url) { $('srvCard').open = true; setStatus(yt ? 'yt' : 'tt', 'err', 'Set up the chat server below'); return; }
+    srvOn = true; setSrvBtn(true);
+    if (yt) setStatus('yt', 'wait', 'Waking up the server…'); else setStatus('yt', '', 'Off');
+    if (tt) setStatus('tt', 'wait', 'Waking up the server…'); else setStatus('tt', '', 'Off');
+    const q = new URLSearchParams(); if (yt) q.set('youtube', yt); if (tt) q.set('tiktok', tt);
+    try { srv = new WebSocket(serverWs(url) + '?' + q.toString()); }
+    catch (e) { srvOn = false; setSrvBtn(false); setStatus(yt ? 'yt' : 'tt', 'err', 'Server address looks wrong'); return; }
+    srv.onopen = () => { $('srvState').textContent = '(connected)'; };
+    srv.onmessage = ev => {
+      let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (m.type === 'status' && (m.platform === 'youtube' || m.platform === 'tiktok')) {
+        setStatus(m.platform === 'youtube' ? 'yt' : 'tt', ['on', 'wait', 'err'].includes(m.state) ? m.state : '', String(m.text || '').slice(0, 90));
+      } else if (m.type === 'chat' && (m.platform === 'youtube' || m.platform === 'tiktok')) {
+        const badges = Array.isArray(m.badges) ? m.badges.filter(b => ['mod', 'sub', 'vip', 'host'].includes(b)) : [];
+        addMessage({ platform: m.platform, name: String(m.name || 'viewer').slice(0, 60), text: String(m.text || '').slice(0, 500), badges });
+      }
+    };
+    srv.onclose = () => {
+      $('srvState').textContent = '(needed for YouTube + TikTok)';
+      if (srvOn) {
+        if (yt) setStatus('yt', 'wait', 'Reconnecting… (the free server can take a minute to wake up)');
+        if (tt) setStatus('tt', 'wait', 'Reconnecting…');
+        setTimeout(() => { if (srvOn) srvConnect(); }, 5000);
+      }
+    };
+  }
+  function srvOff() { srvOn = false; if (srv) { srv.onclose = null; srv.close(); } setSrvBtn(false); setStatus('yt', '', 'Off'); setStatus('tt', '', 'Off'); }
+  $('srvBtn').onclick = () => srvOn ? srvOff() : srvConnect();
 
   // ---------- test + example ----------
   function sendTest() {
@@ -484,12 +496,15 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   $('demo').onclick = () => EXAMPLE.forEach((m, i) => setTimeout(() => addMessage(m), i * 350));
 
   // ---------- start ----------
-  $('twChannel').value = S.twitch; $('ssSession').value = S.ss;
+  $('twChannel').value = S.twitch; $('ytHandle').value = S.youtube; $('ttUser').value = S.tiktok; $('srvUrl').value = S.server;
   $('twChannel').addEventListener('change', e => { S.twitch = cleanChan(e.target.value); save(); });
-  $('ssSession').addEventListener('change', e => { S.ss = e.target.value.trim(); save(); });
+  $('ytHandle').addEventListener('change', e => { S.youtube = e.target.value.trim(); save(); });
+  $('ttUser').addEventListener('change', e => { S.tiktok = cleanTt(e.target.value); save(); });
+  $('srvUrl').addEventListener('change', e => { S.server = e.target.value.trim(); save(); });
+  if (S.server) $('srvState').textContent = '(set up)';
   applyLook(); updateObsLink();
-  if (OBS) { if (S.twitch) twConnect(); if (S.ss) ssConnect(); }
-  else if (!S.twitch && !S.ss) EXAMPLE.forEach(m => addMessage(Object.assign({}, m)));
+  if (OBS) { if (S.twitch) twConnect(); if ((S.youtube || S.tiktok) && S.server) srvConnect(); }
+  else if (!S.twitch && !S.youtube && !S.tiktok) EXAMPLE.forEach(m => addMessage(Object.assign({}, m)));
 })();
 </script>
 </body>
