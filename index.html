@@ -285,10 +285,11 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 
   // ---------- settings: from the link (OBS) or this browser ----------
   const KEY = 'lethal-chat-v3';
-  const DEFAULTS = { twitch: '', youtube: '', tiktok: '', server: '', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, bg: '#9fd8f5' };
+  const DEFAULTS = { twitch: '', youtube: '', tiktok: '', server: 'https://lethal-chat-server.onrender.com', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, bg: '#9fd8f5' };
   let saved = {};
   if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lethal-chat-v2') || '{}') || {}; } catch (e) {} }
   const S = Object.assign({}, DEFAULTS, saved);
+  if (!S.server) S.server = DEFAULTS.server;
   const LINK_KEYS = ['twitch', 'youtube', 'tiktok', 'server', 'theme', 'font', 'anim', 'hide', 'align', 'size', 'max', 'text', 'box', 'icons', 'badges'];
   if (OBS) {
     LINK_KEYS.forEach(k => {
