@@ -68,7 +68,7 @@ function tiktokSource(username) {
         count(K, 'chat');
         const u = d.user || {};
         const text = d.comment || d.content || '';
-        const name = u.nickname || u.uniqueId || d.nickname || d.uniqueId || 'viewer';
+        const name = u.nickname || u.displayId || u.uniqueId || d.nickname || d.uniqueId || 'viewer';
         if (dbg(K).counts.chat <= 5) note(K, 'chat from ' + name + ': ' + JSON.stringify(String(text)).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
         if (text) emit({ type: 'chat', platform: 'tiktok', name, text: String(text) });
       });
