@@ -51,6 +51,29 @@ body.align-right #lines { align-items: flex-end; text-align: right; }
 .badge.vip { background: #e005b9; }
 .badge.sub { background: #8205b4; }
 .badge.host { background: #e91916; }
+.badge.founder { background: #d4a017; }
+.badge.prime { background: #00a8fc; }
+.badge.turbo { background: #59399a; }
+.badge.verified { background: #3a7bd5; }
+.badge.bits { background: #9c3ee8; }
+.badge.member { background: #2ba640; }
+.badge.gifter { background: #ff2c55; }
+.badge.staff { background: #222; }
+.avatar { width: 1.15em; height: 1.15em; border-radius: 50%; object-fit: cover; vertical-align: -.22em; margin-right: .35em; background: rgba(255,255,255,.15); }
+.emote { height: 1.25em; width: auto; vertical-align: -.28em; margin: 0 .05em; }
+.gift-img { height: 1.6em; width: auto; vertical-align: -.45em; margin-left: .25em; }
+.amount { display: inline-block; font: 700 .62em/1 var(--ui); padding: .3em .5em; border-radius: .35em; margin-left: .4em; vertical-align: .18em; background: rgba(0,0,0,.35); color: #fff; text-shadow: none; }
+body.no-avatars .avatar { display: none; }
+.msg.event { border-left: .22em solid var(--ev, var(--gold)); padding-left: .45em; }
+.msg.event .text { font-style: italic; }
+.msg.kind-superchat { --ev: #ffca28; }
+.msg.kind-gift { --ev: #ff2c55; }
+.msg.kind-follow { --ev: #25f4ee; }
+.msg.kind-sub, .msg.kind-member { --ev: #9146ff; }
+.msg.kind-raid { --ev: #ff7a00; }
+.msg.kind-bits { --ev: #9c3ee8; }
+body.theme-boxed .msg.event { background: linear-gradient(90deg, color-mix(in srgb, var(--ev) 35%, transparent), var(--box)); }
+body.theme-clean .msg.event, body.theme-chunky .msg.event { background: color-mix(in srgb, var(--ev) 22%, transparent); border-radius: .3em; padding-block: .1em; }
 .name { font-weight: 700; margin-right: .35em; }
 .text { white-space: pre-wrap; }
 body.no-icons .icon { display: none; }
@@ -245,7 +268,10 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
       </label>
     </div>
     <label class="check"><input id="icons" type="checkbox" checked> Show platform icons</label>
-    <label class="check"><input id="badges" type="checkbox" checked> Show mod, VIP and sub badges (Twitch)</label>
+    <label class="check"><input id="badges" type="checkbox" checked> Show badges (mod, sub, member, VIP and more)</label>
+    <label class="check"><input id="avatars" type="checkbox" checked> Show profile pictures (YouTube and TikTok)</label>
+    <label class="check"><input id="emotes" type="checkbox" checked> Show emotes as pictures</label>
+    <label class="check"><input id="events" type="checkbox" checked> Show events (follows, gifts, subs, Super Chats, raids)</label>
     <div>
       <label>Preview background</label>
       <div class="row" style="margin-top:4px">
@@ -285,12 +311,12 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 
   // ---------- settings: from the link (OBS) or this browser ----------
   const KEY = 'lethal-chat-v3';
-  const DEFAULTS = { twitch: '', youtube: '', tiktok: '', server: 'https://lethal-chat-server.onrender.com', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, bg: '#9fd8f5' };
+  const DEFAULTS = { twitch: '', youtube: '', tiktok: '', server: 'https://lethal-chat-server.onrender.com', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, avatars: true, emotes: true, events: true, bg: '#9fd8f5' };
   let saved = {};
   if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lethal-chat-v2') || '{}') || {}; } catch (e) {} }
   const S = Object.assign({}, DEFAULTS, saved);
   if (!S.server) S.server = DEFAULTS.server;
-  const LINK_KEYS = ['twitch', 'youtube', 'tiktok', 'server', 'theme', 'font', 'anim', 'hide', 'align', 'size', 'max', 'text', 'box', 'icons', 'badges'];
+  const LINK_KEYS = ['twitch', 'youtube', 'tiktok', 'server', 'theme', 'font', 'anim', 'hide', 'align', 'size', 'max', 'text', 'box', 'icons', 'badges', 'avatars', 'emotes', 'events'];
   if (OBS) {
     LINK_KEYS.forEach(k => {
       if (!params.has(k)) return;
@@ -307,6 +333,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     ['clean', 'boxed', 'chunky'].forEach(t => b.classList.toggle('theme-' + t, S.theme === t));
     b.classList.toggle('font-mc', S.font === 'mc');
     b.classList.toggle('no-icons', !S.icons);
+    b.classList.toggle('no-avatars', !S.avatars);
     b.classList.toggle('align-right', S.align === 'right');
     r.setProperty('--chat-font', FONTS[S.font] || FONTS.mc);
     r.setProperty('--size', S.size + 'px');
@@ -320,6 +347,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     $('size').value = S.size; $('sizeVal').textContent = S.size + 'px';
     $('maxMsgs').value = S.max; $('textColor').value = hex(S.text) || '#ffffff'; $('boxColor').value = bx;
     $('icons').checked = S.icons; $('badges').checked = S.badges;
+    $('avatars').checked = S.avatars; $('emotes').checked = S.emotes; $('events').checked = S.events;
     trim();
   }
   const set = (k, v) => { S[k] = v; applyLook(); save(); };
@@ -334,6 +362,9 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   $('boxColor').oninput = e => set('box', e.target.value);
   $('icons').onchange = e => set('icons', e.target.checked);
   $('badges').onchange = e => set('badges', e.target.checked);
+  $('avatars').onchange = e => set('avatars', e.target.checked);
+  $('emotes').onchange = e => set('emotes', e.target.checked);
+  $('events').onchange = e => set('events', e.target.checked);
   document.querySelectorAll('[data-bg]').forEach(x => x.onclick = () => set('bg', x.dataset.bg));
   $('bgColor').oninput = e => set('bg', e.target.value);
 
@@ -380,18 +411,43 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     const live = [...lines.children].filter(x => !x.classList.contains('leaving'));
     live.slice(0, Math.max(0, live.length - S.max)).forEach(x => x.remove());
   }
+  const BADGE_LABEL = { host: 'HOST', mod: 'MOD', vip: 'VIP', sub: 'SUB', founder: 'FOUNDER', prime: 'PRIME', turbo: 'TURBO', verified: '✔', bits: 'BITS', member: 'MEMBER', gifter: 'GIFTER', staff: 'STAFF' };
+  const KINDS = ['chat', 'superchat', 'gift', 'follow', 'sub', 'member', 'raid', 'bits'];
+  const ROLE_COLOR = { host: '#ffd600', mod: '#5e84f1', member: '#2ba640' };
+  const safeSrc = u => { try { const x = new URL(String(u)); return x.protocol === 'https:' ? x.href : null; } catch (e) { return null; } };
   function addMessage(m) {
-    if (!m.text) return;
+    const kind = KINDS.includes(m.kind) ? m.kind : 'chat';
+    if (kind !== 'chat' && !S.events) return;
+    const parts = Array.isArray(m.parts) && m.parts.length ? m.parts : [{ t: 'text', v: m.text || '' }];
+    if (!parts.some(p => (p.t === 'text' && String(p.v || '').trim()) || p.t === 'img') && kind === 'chat') return;
     $('empty').hidden = true;
     const row = document.createElement('div');
-    row.className = 'msg' + (S.anim !== 'none' ? ' in-' + S.anim : '');
+    row.className = 'msg' + (kind !== 'chat' ? ' event kind-' + kind : '') + (S.anim !== 'none' ? ' in-' + S.anim : '');
     const icon = document.createElement('span'); icon.className = 'icon ' + m.platform; icon.innerHTML = SVG[m.platform] || SVG.test; icon.title = m.platform;
     row.appendChild(icon);
-    if (S.badges && m.badges) m.badges.forEach(bd => { const s = document.createElement('span'); s.className = 'badge ' + bd; s.textContent = bd.toUpperCase(); row.appendChild(s); });
-    const name = document.createElement('span'); name.className = 'name'; name.textContent = m.name;
-    name.style.color = hex(m.color) || (m.platform === 'twitch' ? poolColor(m.name) : DEFAULT_NAME[m.platform] || '#fff');
-    const text = document.createElement('span'); text.className = 'text'; text.textContent = m.text;
+    const av = m.avatar && safeSrc(m.avatar);
+    if (av) { const img = document.createElement('img'); img.className = 'avatar'; img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = av; img.onerror = () => img.remove(); row.appendChild(img); }
+    const badges = Array.isArray(m.badges) ? m.badges.filter(b => BADGE_LABEL[b]) : [];
+    if (S.badges) badges.forEach(bd => { const sp = document.createElement('span'); sp.className = 'badge ' + bd; sp.textContent = BADGE_LABEL[bd]; row.appendChild(sp); });
+    const name = document.createElement('span'); name.className = 'name'; name.textContent = String(m.name || 'viewer').slice(0, 60);
+    const role = badges.find(b => ROLE_COLOR[b]);
+    name.style.color = hex(m.color) || (m.platform === 'youtube' && role ? ROLE_COLOR[role] : null) || (m.platform === 'twitch' ? poolColor(name.textContent) : DEFAULT_NAME[m.platform] || '#fff');
+    const text = document.createElement('span'); text.className = 'text';
+    let used = 0;
+    parts.forEach(p => {
+      if (used > 600) return;
+      if (p.t === 'img' && S.emotes && safeSrc(p.src)) {
+        const img = document.createElement('img'); img.className = 'emote'; img.alt = String(p.alt || ''); img.title = img.alt; img.referrerPolicy = 'no-referrer'; img.src = safeSrc(p.src);
+        img.onerror = () => img.replaceWith(document.createTextNode(img.alt));
+        text.appendChild(img); used += 2;
+      } else {
+        const v = String(p.t === 'img' ? (p.alt || '') : (p.v || '')).slice(0, 600 - used);
+        text.appendChild(document.createTextNode(v)); used += v.length;
+      }
+    });
+    if (m.image && safeSrc(m.image)) { const gi = document.createElement('img'); gi.className = 'gift-img'; gi.alt = ''; gi.referrerPolicy = 'no-referrer'; gi.src = safeSrc(m.image); gi.onerror = () => gi.remove(); text.appendChild(gi); }
     row.append(name, text);
+    if (m.amount) { const am = document.createElement('span'); am.className = 'amount'; am.textContent = String(m.amount).slice(0, 30); name.after(am); }
     lines.appendChild(row); trim();
     if (S.hide > 0) setTimeout(() => { row.classList.add('leaving'); setTimeout(() => row.remove(), 500); }, S.hide * 1000);
   }
@@ -419,16 +475,59 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
         line = line.slice(i + 1);
       }
       if (/ 366 /.test(line) || / ROOMSTATE /.test(line)) setStatus('tw', 'on', '#' + chan);
+      const unesc = v => String(v || '').replace(/\\s/g, ' ').replace(/\\:/g, ';').replace(/\\\\/g, '\\');
+      const twBadges = () => {
+        const b = tags.badges || '', out = [];
+        if (/broadcaster\//.test(b)) out.push('host');
+        if (/staff\//.test(b)) out.push('staff');
+        if (/moderator\//.test(b)) out.push('mod');
+        if (/vip\//.test(b)) out.push('vip');
+        if (/founder\//.test(b)) out.push('founder');
+        else if (/subscriber\//.test(b)) out.push('sub');
+        if (/partner\//.test(b)) out.push('verified');
+        if (/premium\//.test(b)) out.push('prime');
+        if (/turbo\//.test(b)) out.push('turbo');
+        if (/bits\//.test(b)) out.push('bits');
+        return out;
+      };
+      const twParts = text => {
+        if (!tags.emotes) return [{ t: 'text', v: text }];
+        const chars = Array.from(text), marks = [];
+        tags.emotes.split('/').forEach(e => {
+          const [id, ranges] = e.split(':');
+          if (!id || !ranges) return;
+          ranges.split(',').forEach(r => { const [a, z] = r.split('-').map(Number); if (z >= a) marks.push({ id, a, z }); });
+        });
+        marks.sort((x, y) => x.a - y.a);
+        const parts = []; let i = 0;
+        marks.forEach(mk => {
+          if (mk.a < i) return;
+          if (mk.a > i) parts.push({ t: 'text', v: chars.slice(i, mk.a).join('') });
+          parts.push({ t: 'img', src: 'https://static-cdn.jtvnw.net/emoticons/v2/' + encodeURIComponent(mk.id) + '/default/dark/2.0', alt: chars.slice(mk.a, mk.z + 1).join('') });
+          i = mk.z + 1;
+        });
+        if (i < chars.length) parts.push({ t: 'text', v: chars.slice(i).join('') });
+        return parts;
+      };
       const m = line.match(/^:([^!]+)!\S+ PRIVMSG #\S+ :(.*)$/);
       if (m) {
         let text = m[2];
         if (text.startsWith('\u0001ACTION ')) text = text.slice(8, -1);
-        const b = tags.badges || '', badges = [];
-        if (/broadcaster\//.test(b)) badges.push('host');
-        if (/moderator\//.test(b)) badges.push('mod');
-        if (/vip\//.test(b)) badges.push('vip');
-        if (/subscriber\/|founder\//.test(b)) badges.push('sub');
-        addMessage({ platform: 'twitch', name: (tags['display-name'] || m[1]).replace(/\\s/g, ' '), color: tags.color, badges, text });
+        const name = unesc(tags['display-name'] || m[1]);
+        const bits = +tags.bits || 0;
+        addMessage({ platform: 'twitch', kind: bits ? 'bits' : 'chat', amount: bits ? bits + ' bits' : undefined, name, color: tags.color, badges: twBadges(), text, parts: twParts(text) });
+        return;
+      }
+      const un = line.match(/^:\S+ USERNOTICE #\S+(?: :(.*))?$/);
+      if (un) {
+        const id = tags['msg-id'] || '';
+        const kind = /raid/.test(id) ? 'raid' : /sub|gift|upgrade|bitsbadgetier/.test(id) ? 'sub' : null;
+        if (!kind) return;
+        const name = unesc(tags['display-name'] || tags.login || 'someone');
+        let sys = unesc(tags['system-msg'] || '');
+        if (sys.toLowerCase().startsWith(name.toLowerCase())) sys = sys.slice(name.length).trim();
+        const extra = un[1] ? ' "' + un[1] + '"' : '';
+        addMessage({ platform: 'twitch', kind, name, color: tags.color, badges: twBadges(), text: (sys || (kind === 'raid' ? 'is raiding!' : 'subscribed!')) + extra });
       }
     });
     tw.onclose = () => { if (twOn) { setStatus('tw', 'wait', 'Reconnecting…'); setTimeout(() => { if (twOn) twConnect(); }, 3000); } };
@@ -462,8 +561,8 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
       if (m.type === 'status' && (m.platform === 'youtube' || m.platform === 'tiktok')) {
         setStatus(m.platform === 'youtube' ? 'yt' : 'tt', ['on', 'wait', 'err'].includes(m.state) ? m.state : '', String(m.text || '').slice(0, 90));
       } else if (m.type === 'chat' && (m.platform === 'youtube' || m.platform === 'tiktok')) {
-        const badges = Array.isArray(m.badges) ? m.badges.filter(b => ['mod', 'sub', 'vip', 'host'].includes(b)) : [];
-        addMessage({ platform: m.platform, name: String(m.name || 'viewer').slice(0, 60), text: String(m.text || '').slice(0, 500), badges });
+        const parts = Array.isArray(m.parts) ? m.parts.slice(0, 80).map(p => p && p.t === 'img' ? { t: 'img', src: String(p.src || ''), alt: String(p.alt || '') } : { t: 'text', v: String((p && p.v) || '') }) : null;
+        addMessage({ platform: m.platform, kind: String(m.kind || 'chat'), name: String(m.name || 'viewer').slice(0, 60), text: String(m.text || '').slice(0, 500), parts, badges: Array.isArray(m.badges) ? m.badges.map(String) : [], avatar: m.avatar ? String(m.avatar) : null, image: m.image ? String(m.image) : null, amount: m.amount ? String(m.amount) : null });
       }
     };
     srv.onclose = () => {
@@ -487,12 +586,15 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   $('testSend').onclick = sendTest;
   $('testMsg').addEventListener('keydown', e => { if (e.key === 'Enter') sendTest(); });
   const EXAMPLE = [
-    { platform: 'twitch', name: 'CreeperHunter', badges: ['mod'], text: 'welcome back everyone!' },
-    { platform: 'youtube', name: 'Diamond Digger', text: 'first time catching the stream live' },
-    { platform: 'tiktok', name: 'blocky.builds', text: 'that build is insane' },
-    { platform: 'twitch', name: 'RedstoneRae', badges: ['sub'], text: 'gg' },
-    { platform: 'youtube', name: 'NetherNick', text: 'what seed is this?' },
-    { platform: 'tiktok', name: 'endermanfan22', text: 'hi from tiktok!!' }
+    { platform: 'twitch', name: 'CreeperHunter', badges: ['mod', 'founder'], text: 'welcome back everyone! Kappa', parts: [{ t: 'text', v: 'welcome back everyone! ' }, { t: 'img', src: 'https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/2.0', alt: 'Kappa' }] },
+    { platform: 'youtube', name: 'Diamond Digger', badges: ['member'], text: 'first time catching the stream live' },
+    { platform: 'tiktok', name: 'blocky.builds', badges: ['sub'], text: 'that build is insane' },
+    { platform: 'youtube', kind: 'superchat', name: 'NetherNick', amount: '$5.00', text: 'what seed is this?' },
+    { platform: 'tiktok', kind: 'gift', name: 'endermanfan22', text: 'sent Rose x5', amount: '5 coins' },
+    { platform: 'twitch', kind: 'sub', name: 'RedstoneRae', badges: ['sub'], text: 'subscribed at Tier 1. They\'ve subscribed for 3 months!' },
+    { platform: 'tiktok', kind: 'follow', name: 'pixel.pam', text: 'followed' },
+    { platform: 'twitch', kind: 'raid', name: 'BlockBuilderTV', badges: ['verified'], text: '12 raiders from BlockBuilderTV have joined!' },
+    { platform: 'youtube', name: 'LethalLuke', badges: ['host'], text: 'thanks for watching!' }
   ];
   $('demo').onclick = () => EXAMPLE.forEach((m, i) => setTimeout(() => addMessage(m), i * 350));
 

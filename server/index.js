@@ -64,13 +64,46 @@ function tiktokSource(username) {
       conn.on(WebcastEvent.MEMBER, () => count(K, 'member'));
       conn.on(WebcastEvent.LIKE, () => count(K, 'like'));
       conn.on(WebcastEvent.ROOM_USER, () => count(K, 'roomUser'));
+      const ttUser = (u = {}) => {
+        const pic = u.avatarThumb && u.avatarThumb.urlList && u.avatarThumb.urlList[0];
+        return { name: u.nickname || u.displayId || u.uniqueId || 'viewer', avatar: pic || undefined };
+      };
+      const ttBadges = (d) => {
+        const id = d.userIdentity || {}, b = [];
+        if (id.isAnchor) b.push('host');
+        if (id.isModeratorOfAnchor || (d.user && d.user.userAttr && d.user.userAttr.isAdmin)) b.push('mod');
+        if (id.isSubscriberOfAnchor) b.push('sub');
+        if (id.isGiftGiverOfAnchor) b.push('gifter');
+        if (d.user && d.user.verified) b.push('verified');
+        return b;
+      };
       conn.on(WebcastEvent.CHAT, d => {
         count(K, 'chat');
-        const u = d.user || {};
         const text = d.comment || d.content || '';
-        const name = u.nickname || u.displayId || u.uniqueId || d.nickname || d.uniqueId || 'viewer';
-        if (dbg(K).counts.chat <= 5) note(K, 'chat from ' + name + ': ' + JSON.stringify(String(text)).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
-        if (text) emit({ type: 'chat', platform: 'tiktok', name, text: String(text) });
+        const who = ttUser(d.user);
+        if (dbg(K).counts.chat <= 5) note(K, 'chat from ' + who.name + ': ' + JSON.stringify(String(text)).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
+        if (text) emit({ type: 'chat', kind: 'chat', platform: 'tiktok', name: who.name, avatar: who.avatar, badges: ttBadges(d), text: String(text) });
+      });
+      conn.on(WebcastEvent.GIFT, d => {
+        count(K, 'gift');
+        const g = d.gift || {};
+        // gifts that can be sent in a streak only count when the streak ends
+        if (g.type === 1 && !d.repeatEnd) return;
+        const who = ttUser(d.user);
+        const giftName = g.name || (d.extendedGiftInfo && d.extendedGiftInfo.name) || (d.giftDetails && d.giftDetails.giftName) || 'a gift';
+        const img = (g.image && g.image.urlList && g.image.urlList[0]) || (g.icon && g.icon.urlList && g.icon.urlList[0]) || undefined;
+        const n = d.repeatCount || 1;
+        emit({ type: 'chat', kind: 'gift', platform: 'tiktok', name: who.name, avatar: who.avatar, badges: ttBadges(d), text: 'sent ' + giftName + (n > 1 ? ' x' + n : ''), image: img, amount: g.diamondCount ? (g.diamondCount * n) + ' coins' : undefined });
+      });
+      conn.on(WebcastEvent.FOLLOW, d => {
+        count(K, 'follow');
+        const who = ttUser(d.user);
+        emit({ type: 'chat', kind: 'follow', platform: 'tiktok', name: who.name, avatar: who.avatar, text: 'followed' });
+      });
+      conn.on(WebcastEvent.SUB_NOTIFY, d => {
+        count(K, 'subscribe');
+        const who = ttUser(d.user);
+        emit({ type: 'chat', kind: 'sub', platform: 'tiktok', name: who.name, avatar: who.avatar, text: 'subscribed' });
       });
       conn.on(WebcastEvent.STREAM_END, () => { status('wait', 'Live ended, waiting for next live'); retry(); });
       conn.on('disconnected', () => { if (!stopped) { status('wait', 'Reconnecting…'); retry(10_000); } });
@@ -186,14 +219,46 @@ function youtubeSource(handle) {
           if (action.type !== 'AddChatItemAction' || !action.item) return;
           const item = action.item;
           count(K, 'item:' + item.type);
-          if (item.type !== 'LiveChatTextMessage' && item.type !== 'LiveChatPaidMessage') return;
-          const text = item.message ? item.message.toString() : '';
-          const name = item.author && item.author.name ? String(item.author.name) : 'viewer';
+          const a = item.author || {};
+          const name = String(a.name || 'viewer').replace(/^@/, '');
+          const thumbs = a.thumbnails || [];
+          const avatar = (thumbs[0] && thumbs[0].url) || a.avatar_thumbnail_url || undefined;
           const badges = [];
-          if (item.author && item.author.is_moderator) badges.push('mod');
-          if (item.author && item.author.badges && item.author.badges.some(b => /member/i.test(String(b.tooltip || '')))) badges.push('sub');
-          if ((dbg(K).counts['item:' + item.type] || 0) <= 3) note(K, 'chat from ' + name + ': ' + JSON.stringify(text).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
-          if (text) emit({ type: 'chat', platform: 'youtube', name: name.replace(/^@/, ''), text, badges });
+          const tips = (a.badges || []).map(x => String(x.tooltip || x.label || '')).join(' ');
+          if (a.is_creator || /owner/i.test(tips)) badges.push('host');
+          if (a.is_moderator || /moderator/i.test(tips)) badges.push('mod');
+          if (/member/i.test(tips)) badges.push('member');
+          if (a.is_verified || a.is_verified_artist || /verified/i.test(tips)) badges.push('verified');
+          const toParts = t => {
+            if (!t) return [];
+            const runs = t.runs || [];
+            if (!runs.length) return [{ t: 'text', v: t.toString() }];
+            return runs.map(r => {
+              if (r.emoji) {
+                const imgs = r.emoji.image || [];
+                const src = imgs.length ? imgs[imgs.length - 1].url : null;
+                if (r.emoji.is_custom && src) return { t: 'img', src, alt: r.text || (r.emoji.shortcuts && r.emoji.shortcuts[0]) || '' };
+                return { t: 'text', v: r.text || '' };
+              }
+              return { t: 'text', v: r.text || '' };
+            });
+          };
+          let msg = null;
+          if (item.type === 'LiveChatTextMessage') {
+            msg = { kind: 'chat', parts: toParts(item.message), text: item.message ? item.message.toString() : '' };
+          } else if (item.type === 'LiveChatPaidMessage') {
+            msg = { kind: 'superchat', amount: item.purchase_amount, parts: toParts(item.message), text: item.message ? item.message.toString() : '' };
+          } else if (item.type === 'LiveChatPaidSticker') {
+            msg = { kind: 'superchat', amount: item.purchase_amount, text: 'sent a Super Sticker' };
+          } else if (item.type === 'LiveChatMembershipItem') {
+            const head = (item.header_primary_text && item.header_primary_text.toString()) || (item.header_subtext && item.header_subtext.toString()) || 'became a member';
+            msg = { kind: 'member', text: head + (item.message ? ': ' + item.message.toString() : '') };
+          } else if (item.type === 'LiveChatSponsorshipsGiftPurchaseAnnouncement' || item.type === 'LiveChatSponsorshipsGiftRedemptionAnnouncement') {
+            msg = { kind: 'member', text: item.type.includes('Purchase') ? 'gifted memberships' : 'received a gifted membership' };
+          }
+          if (!msg) return;
+          if ((dbg(K).counts['item:' + item.type] || 0) <= 3) note(K, item.type + ' from ' + name + ': ' + JSON.stringify(msg.text).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
+          if (msg.text || msg.kind !== 'chat') emit(Object.assign({ type: 'chat', platform: 'youtube', name, avatar, badges }, msg));
         });
         chat.on('end', () => { status('wait', 'Live ended, waiting for next live'); retry(); });
         chat.on('error', e => {
