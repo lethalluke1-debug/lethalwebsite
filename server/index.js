@@ -68,6 +68,10 @@ function tiktokSource(username) {
         const pic = u.avatarThumb && u.avatarThumb.urlList && u.avatarThumb.urlList[0];
         return { name: u.nickname || u.displayId || u.uniqueId || 'viewer', avatar: pic || undefined };
       };
+      const ttBadgeImgs = (u = {}) => (u.badgeList || [])
+        .filter(b => b && b.display !== false)
+        .map(b => b.image && b.image.image && b.image.image.urlList && b.image.image.urlList[0])
+        .filter(Boolean).slice(0, 3).map(src => ({ src, title: '' }));
       const ttBadges = (d) => {
         const id = d.userIdentity || {}, b = [];
         if (id.isAnchor) b.push('host');
@@ -82,7 +86,7 @@ function tiktokSource(username) {
         const text = d.comment || d.content || '';
         const who = ttUser(d.user);
         if (dbg(K).counts.chat <= 5) note(K, 'chat from ' + who.name + ': ' + JSON.stringify(String(text)).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
-        if (text) emit({ type: 'chat', kind: 'chat', platform: 'tiktok', name: who.name, avatar: who.avatar, badges: ttBadges(d), text: String(text) });
+        if (text) emit({ type: 'chat', kind: 'chat', platform: 'tiktok', name: who.name, avatar: who.avatar, badges: ttBadges(d), badgeImgs: ttBadgeImgs(d.user), text: String(text) });
       });
       conn.on(WebcastEvent.GIFT, d => {
         count(K, 'gift');
@@ -93,7 +97,7 @@ function tiktokSource(username) {
         const giftName = g.name || (d.extendedGiftInfo && d.extendedGiftInfo.name) || (d.giftDetails && d.giftDetails.giftName) || 'a gift';
         const img = (g.image && g.image.urlList && g.image.urlList[0]) || (g.icon && g.icon.urlList && g.icon.urlList[0]) || undefined;
         const n = d.repeatCount || 1;
-        emit({ type: 'chat', kind: 'gift', platform: 'tiktok', name: who.name, avatar: who.avatar, badges: ttBadges(d), text: 'sent ' + giftName + (n > 1 ? ' x' + n : ''), image: img, amount: g.diamondCount ? (g.diamondCount * n) + ' coins' : undefined });
+        emit({ type: 'chat', kind: 'gift', platform: 'tiktok', name: who.name, avatar: who.avatar, badges: ttBadges(d), badgeImgs: ttBadgeImgs(d.user), text: 'sent ' + giftName + (n > 1 ? ' x' + n : ''), image: img, amount: g.diamondCount ? (g.diamondCount * n) + ' coins' : undefined });
       });
       conn.on(WebcastEvent.FOLLOW, d => {
         count(K, 'follow');
@@ -229,6 +233,11 @@ function youtubeSource(handle) {
           if (a.is_moderator || /moderator/i.test(tips)) badges.push('mod');
           if (/member/i.test(tips)) badges.push('member');
           if (a.is_verified || a.is_verified_artist || /verified/i.test(tips)) badges.push('verified');
+          const badgeImgs = [];
+          for (const bd of (a.badges || [])) {
+            const th = bd && bd.custom_thumbnail;
+            if (th && th.length) badgeImgs.push({ src: th[th.length - 1].url, title: String(bd.tooltip || 'Member') });
+          }
           const toParts = t => {
             if (!t) return [];
             const runs = t.runs || [];
@@ -258,7 +267,7 @@ function youtubeSource(handle) {
           }
           if (!msg) return;
           if ((dbg(K).counts['item:' + item.type] || 0) <= 3) note(K, item.type + ' from ' + name + ': ' + JSON.stringify(msg.text).slice(0, 80) + ' -> sent to ' + src_count(K) + ' page(s)');
-          if (msg.text || msg.kind !== 'chat') emit(Object.assign({ type: 'chat', platform: 'youtube', name, avatar, badges }, msg));
+          if (msg.text || msg.kind !== 'chat') emit(Object.assign({ type: 'chat', platform: 'youtube', name, avatar, badges, badgeImgs }, msg));
         });
         chat.on('end', () => { status('wait', 'Live ended, waiting for next live'); retry(); });
         chat.on('error', e => {
@@ -275,8 +284,39 @@ function youtubeSource(handle) {
   };
 }
 
+// ---------- Twitch badge pictures (public mirror of Twitch's badge list) ----------
+const badgeCache = new Map(); // key -> { at, map }
+async function ivrBadges(path) {
+  const hit = badgeCache.get(path);
+  if (hit && Date.now() - hit.at < 3600_000) return hit.map;
+  const map = {};
+  try {
+    const r = await fetch('https://api.ivr.fi/v2/twitch/badges/' + path, { headers: { 'user-agent': 'lethal-chat' }, signal: AbortSignal.timeout(10000) });
+    const j = await r.json();
+    const sets = Array.isArray(j) ? j : (j && Array.isArray(j.data) ? j.data : []);
+    for (const set of sets) {
+      const setId = set.setID || set.set_id || set.id;
+      for (const v of (set.versions || [])) {
+        const url = v.image_url_4x || v.image_url_2x || v.image_url_1x || v.image || v.url;
+        if (setId && v.id != null && url) map[setId + '/' + v.id] = { src: url, title: v.title || setId };
+      }
+    }
+  } catch (e) { console.log('badge fetch failed for ' + path + ': ' + e.message); }
+  badgeCache.set(path, { at: Date.now(), map });
+  return map;
+}
+
 // ---------- server ----------
 const server = http.createServer((req, res) => {
+  if (req.url.startsWith('/twitch-badges')) {
+    const q = new URL(req.url, 'http://x').searchParams;
+    const id = String(q.get('id') || '').replace(/\D/g, '').slice(0, 20);
+    Promise.all([ivrBadges('global'), id ? ivrBadges('channel?id=' + id) : Promise.resolve({})]).then(([g, c]) => {
+      res.writeHead(200, { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'cache-control': 'max-age=600' });
+      res.end(JSON.stringify(Object.assign({}, g, c)));
+    });
+    return;
+  }
   if (req.url.startsWith('/debug')) {
     const out = {};
     for (const [k, d] of debug) out[k] = { open_pages: sources.has(k) ? sources.get(k).subs.size : 0, counts: d.counts, log: d.log };

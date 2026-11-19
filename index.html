@@ -59,6 +59,15 @@ body.align-right #lines { align-items: flex-end; text-align: right; }
 .badge.member { background: #2ba640; }
 .badge.gifter { background: #ff2c55; }
 .badge.staff { background: #222; }
+.bimg { height: 1em; width: auto; min-width: 1em; vertical-align: -.12em; margin-right: .3em; border-radius: .15em; }
+.bicon { display: inline-grid; place-items: center; width: 1em; height: 1em; border-radius: .2em; vertical-align: -.12em; margin-right: .3em; }
+.bicon svg { width: 72%; height: 72%; display: block; }
+.bicon.host { background: #e91916; } .bicon.mod { background: #00ad03; } .bicon.vip { background: #e005b9; }
+.bicon.sub { background: #8205b4; } .bicon.founder { background: #d4a017; } .bicon.prime { background: #00a8fc; }
+.bicon.turbo { background: #59399a; } .bicon.verified { background: #3a7bd5; } .bicon.bits { background: #9c3ee8; }
+.bicon.member { background: #2ba640; } .bicon.gifter { background: #ff2c55; } .bicon.staff { background: #222; }
+body.badge-text .bicon, body.badge-text .bimg { display: none; }
+body:not(.badge-text) .badge { display: none; }
 .avatar { width: 1.15em; height: 1.15em; border-radius: 50%; object-fit: cover; vertical-align: -.22em; margin-right: .35em; background: rgba(255,255,255,.15); }
 .emote { height: 1.25em; width: auto; vertical-align: -.28em; margin: 0 .05em; }
 .gift-img { height: 1.6em; width: auto; vertical-align: -.45em; margin-left: .25em; }
@@ -268,7 +277,8 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
       </label>
     </div>
     <label class="check"><input id="icons" type="checkbox" checked> Show platform icons</label>
-    <label class="check"><input id="badges" type="checkbox" checked> Show badges (mod, sub, member, VIP and more)</label>
+    <label class="check"><input id="badges" type="checkbox" checked> Show badges (broadcaster, mod, sub, member, VIP and more)</label>
+    <label class="check"><input id="badgeText" type="checkbox"> Show badges as text labels instead of icons</label>
     <label class="check"><input id="avatars" type="checkbox" checked> Show profile pictures (YouTube and TikTok)</label>
     <label class="check"><input id="emotes" type="checkbox" checked> Show emotes as pictures</label>
     <label class="check"><input id="events" type="checkbox" checked> Show events (follows, gifts, subs, Super Chats, raids)</label>
@@ -311,12 +321,12 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 
   // ---------- settings: from the link (OBS) or this browser ----------
   const KEY = 'lethal-chat-v3';
-  const DEFAULTS = { twitch: '', youtube: '', tiktok: '', server: 'https://lethal-chat-server.onrender.com', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, avatars: true, emotes: true, events: true, bg: '#9fd8f5' };
+  const DEFAULTS = { twitch: '', youtube: '', tiktok: '', server: 'https://lethal-chat-server.onrender.com', theme: 'boxed', font: 'mc', anim: 'up', hide: 0, align: 'left', size: 28, max: 12, text: '#ffffff', box: '#11181d', icons: true, badges: true, avatars: true, emotes: true, events: true, badgeText: false, bg: '#9fd8f5' };
   let saved = {};
   if (!OBS) { try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lethal-chat-v2') || '{}') || {}; } catch (e) {} }
   const S = Object.assign({}, DEFAULTS, saved);
   if (!S.server) S.server = DEFAULTS.server;
-  const LINK_KEYS = ['twitch', 'youtube', 'tiktok', 'server', 'theme', 'font', 'anim', 'hide', 'align', 'size', 'max', 'text', 'box', 'icons', 'badges', 'avatars', 'emotes', 'events'];
+  const LINK_KEYS = ['twitch', 'youtube', 'tiktok', 'server', 'theme', 'font', 'anim', 'hide', 'align', 'size', 'max', 'text', 'box', 'icons', 'badges', 'avatars', 'emotes', 'events', 'badgeText'];
   if (OBS) {
     LINK_KEYS.forEach(k => {
       if (!params.has(k)) return;
@@ -334,6 +344,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     b.classList.toggle('font-mc', S.font === 'mc');
     b.classList.toggle('no-icons', !S.icons);
     b.classList.toggle('no-avatars', !S.avatars);
+    b.classList.toggle('badge-text', !!S.badgeText);
     b.classList.toggle('align-right', S.align === 'right');
     r.setProperty('--chat-font', FONTS[S.font] || FONTS.mc);
     r.setProperty('--size', S.size + 'px');
@@ -347,7 +358,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     $('size').value = S.size; $('sizeVal').textContent = S.size + 'px';
     $('maxMsgs').value = S.max; $('textColor').value = hex(S.text) || '#ffffff'; $('boxColor').value = bx;
     $('icons').checked = S.icons; $('badges').checked = S.badges;
-    $('avatars').checked = S.avatars; $('emotes').checked = S.emotes; $('events').checked = S.events;
+    $('avatars').checked = S.avatars; $('emotes').checked = S.emotes; $('events').checked = S.events; $('badgeText').checked = !!S.badgeText;
     trim();
   }
   const set = (k, v) => { S[k] = v; applyLook(); save(); };
@@ -365,6 +376,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   $('avatars').onchange = e => set('avatars', e.target.checked);
   $('emotes').onchange = e => set('emotes', e.target.checked);
   $('events').onchange = e => set('events', e.target.checked);
+  $('badgeText').onchange = e => set('badgeText', e.target.checked);
   document.querySelectorAll('[data-bg]').forEach(x => x.onclick = () => set('bg', x.dataset.bg));
   $('bgColor').oninput = e => set('bg', e.target.value);
 
@@ -412,6 +424,22 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     live.slice(0, Math.max(0, live.length - S.max)).forEach(x => x.remove());
   }
   const BADGE_LABEL = { host: 'HOST', mod: 'MOD', vip: 'VIP', sub: 'SUB', founder: 'FOUNDER', prime: 'PRIME', turbo: 'TURBO', verified: '✔', bits: 'BITS', member: 'MEMBER', gifter: 'GIFTER', staff: 'STAFF' };
+  const P = d => '<svg viewBox="0 0 16 16" fill="#fff"><path d="' + d + '"/></svg>';
+  const BADGE_SVG = {
+    host: P('M2 4.5h8a1 1 0 0 1 1 1v1.2l3-1.9v6.4l-3-1.9v1.2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z'),
+    mod: P('M13.5 1.5 15 3 9.2 8.8l1.3 1.3-1.1 1.1-1.1-.7-3.2 3.2a1.2 1.2 0 1 1-1.7-1.7l3.2-3.2-.7-1.1 1.1-1.1 1.3 1.3z'),
+    vip: P('M8 14 1.5 6.5 4 2.5h8l2.5 4z'),
+    sub: P('M8 1.2l2 4.3 4.7.5-3.5 3.2 1 4.6L8 11.5l-4.2 2.3 1-4.6L1.3 6l4.7-.5z'),
+    founder: P('M8 1.2l2 4.3 4.7.5-3.5 3.2 1 4.6L8 11.5l-4.2 2.3 1-4.6L1.3 6l4.7-.5z'),
+    member: P('M8 1.2l2 4.3 4.7.5-3.5 3.2 1 4.6L8 11.5l-4.2 2.3 1-4.6L1.3 6l4.7-.5z'),
+    prime: P('M1.5 12.5h13l-1-7.5-3.2 3L8 3 5.7 8 2.5 5z'),
+    turbo: P('M9.5 1 3 9h4.5l-1 6L13 7H8.5z'),
+    bits: P('M8 1 14 6 8 15 2 6z'),
+    verified: P('M6.5 11.8 2.7 8l1.4-1.4 2.4 2.4 5.4-5.4 1.4 1.4z'),
+    gifter: P('M2 7h12v2H9v6H7V9H2zm1 3h4v5H3zm6 0h4v5H9zM8 6C6 6 4 5.5 4 4s1.5-2 4 2c2.5-4 4-3.5 4-2s-2 2-4 2z'),
+    staff: P('M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-.8 3h1.6v4.5H7.2zm0 5.6h1.6v1.6H7.2z')
+  };
+  const BADGE_TITLE = { host: 'Broadcaster', mod: 'Moderator', vip: 'VIP', sub: 'Subscriber', founder: 'Founder', member: 'Member', prime: 'Prime Gaming', turbo: 'Turbo', bits: 'Cheer', verified: 'Verified', gifter: 'Gifter', staff: 'Staff' };
   const KINDS = ['chat', 'superchat', 'gift', 'follow', 'sub', 'member', 'raid', 'bits'];
   const ROLE_COLOR = { host: '#ffd600', mod: '#5e84f1', member: '#2ba640' };
   const safeSrc = u => { try { const x = new URL(String(u)); return x.protocol === 'https:' ? x.href : null; } catch (e) { return null; } };
@@ -428,7 +456,18 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     const av = m.avatar && safeSrc(m.avatar);
     if (av) { const img = document.createElement('img'); img.className = 'avatar'; img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = av; img.onerror = () => img.remove(); row.appendChild(img); }
     const badges = Array.isArray(m.badges) ? m.badges.filter(b => BADGE_LABEL[b]) : [];
-    if (S.badges) badges.forEach(bd => { const sp = document.createElement('span'); sp.className = 'badge ' + bd; sp.textContent = BADGE_LABEL[bd]; row.appendChild(sp); });
+    if (S.badges) {
+      const imgs = (Array.isArray(m.badgeImgs) ? m.badgeImgs : []).filter(x => x && safeSrc(x.src)).slice(0, 6).map(x => Object.assign({ kind: m.platform === 'youtube' ? 'member' : null }, x));
+      // Twitch pictures cover every badge; YouTube pictures are member badges; TikTok pictures are extra
+      const covered = imgs.map(x => x.kind).filter(Boolean);
+      const iconFor = bd => { const ic = document.createElement('span'); ic.className = 'bicon ' + bd; ic.title = BADGE_TITLE[bd] || bd; ic.innerHTML = BADGE_SVG[bd]; return ic; };
+      badges.forEach(bd => {
+        const sp = document.createElement('span'); sp.className = 'badge ' + bd; sp.textContent = BADGE_LABEL[bd]; row.appendChild(sp);
+        if (covered.includes(bd) || !BADGE_SVG[bd]) return;
+        row.appendChild(iconFor(bd));
+      });
+      imgs.forEach(x => { const im = document.createElement('img'); im.className = 'bimg'; im.alt = ''; im.title = String(x.title || ''); im.referrerPolicy = 'no-referrer'; im.src = safeSrc(x.src); im.onerror = () => { if (x.kind && BADGE_SVG[x.kind]) im.replaceWith(iconFor(x.kind)); else im.remove(); }; row.appendChild(im); });
+    }
     const name = document.createElement('span'); name.className = 'name'; name.textContent = String(m.name || 'viewer').slice(0, 60);
     const role = badges.find(b => ROLE_COLOR[b]);
     name.style.color = hex(m.color) || (m.platform === 'youtube' && role ? ROLE_COLOR[role] : null) || (m.platform === 'twitch' ? poolColor(name.textContent) : DEFAULT_NAME[m.platform] || '#fff');
@@ -455,6 +494,21 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   function setStatus(p, state, text) { $(p + 'Dot').className = 'dot' + (state ? ' ' + state : ''); $(p + 'Status').textContent = text; }
   function setBtn(p, on) { $(p + 'Btn').textContent = on ? 'Disconnect' : 'Connect'; $(p + 'Btn').className = 'sm ' + (on ? 'stop' : 'go'); }
 
+  // ---------- Twitch badge pictures (fetched through the chat server) ----------
+  let twBadgeMap = {}, twBadgeRoom = null;
+  async function loadTwBadges(roomId) {
+    if (twBadgeRoom === roomId) return;
+    twBadgeRoom = roomId;
+    const base = (S.server || DEFAULTS.server).trim().replace(/\/+$/, '').replace(/^ws/, 'http');
+    try {
+      const r = await fetch(base + '/twitch-badges?id=' + encodeURIComponent(roomId));
+      const j = await r.json();
+      const map = {};
+      Object.entries(j || {}).forEach(([k, v]) => { if (v && safeSrc(v.src)) map[k] = { src: v.src, title: String(v.title || '') }; });
+      twBadgeMap = map;
+    } catch (e) { twBadgeRoom = null; setTimeout(() => loadTwBadges(roomId), 60000); }
+  }
+
   // ---------- Twitch (reads chat anonymously) ----------
   let tw = null, twOn = false;
   const cleanChan = v => v.trim().toLowerCase().replace(/.*twitch\.tv\//, '').replace(/^[#@]/, '').split(/[/?]/)[0];
@@ -475,6 +529,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
         line = line.slice(i + 1);
       }
       if (/ 366 /.test(line) || / ROOMSTATE /.test(line)) setStatus('tw', 'on', '#' + chan);
+      if (/ ROOMSTATE /.test(line) && tags['room-id']) loadTwBadges(tags['room-id']);
       const unesc = v => String(v || '').replace(/\\s/g, ' ').replace(/\\:/g, ';').replace(/\\\\/g, '\\');
       const twBadges = () => {
         const b = tags.badges || '', out = [];
@@ -490,6 +545,8 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
         if (/bits\//.test(b)) out.push('bits');
         return out;
       };
+      const TW_KIND = { broadcaster: 'host', moderator: 'mod', vip: 'vip', subscriber: 'sub', founder: 'founder', premium: 'prime', turbo: 'turbo', bits: 'bits', partner: 'verified', staff: 'staff' };
+      const twBadgeImgs = () => (tags.badges || '').split(',').filter(Boolean).map(k => twBadgeMap[k] ? Object.assign({ kind: TW_KIND[k.split('/')[0]] }, twBadgeMap[k]) : null).filter(Boolean);
       const twParts = text => {
         if (!tags.emotes) return [{ t: 'text', v: text }];
         const chars = Array.from(text), marks = [];
@@ -515,7 +572,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
         if (text.startsWith('\u0001ACTION ')) text = text.slice(8, -1);
         const name = unesc(tags['display-name'] || m[1]);
         const bits = +tags.bits || 0;
-        addMessage({ platform: 'twitch', kind: bits ? 'bits' : 'chat', amount: bits ? bits + ' bits' : undefined, name, color: tags.color, badges: twBadges(), text, parts: twParts(text) });
+        addMessage({ platform: 'twitch', kind: bits ? 'bits' : 'chat', amount: bits ? bits + ' bits' : undefined, name, color: tags.color, badges: twBadges(), badgeImgs: twBadgeImgs(), text, parts: twParts(text) });
         return;
       }
       const un = line.match(/^:\S+ USERNOTICE #\S+(?: :(.*))?$/);
@@ -527,7 +584,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
         let sys = unesc(tags['system-msg'] || '');
         if (sys.toLowerCase().startsWith(name.toLowerCase())) sys = sys.slice(name.length).trim();
         const extra = un[1] ? ' "' + un[1] + '"' : '';
-        addMessage({ platform: 'twitch', kind, name, color: tags.color, badges: twBadges(), text: (sys || (kind === 'raid' ? 'is raiding!' : 'subscribed!')) + extra });
+        addMessage({ platform: 'twitch', kind, name, color: tags.color, badges: twBadges(), badgeImgs: twBadgeImgs(), text: (sys || (kind === 'raid' ? 'is raiding!' : 'subscribed!')) + extra });
       }
     });
     tw.onclose = () => { if (twOn) { setStatus('tw', 'wait', 'Reconnecting…'); setTimeout(() => { if (twOn) twConnect(); }, 3000); } };
@@ -562,7 +619,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
         setStatus(m.platform === 'youtube' ? 'yt' : 'tt', ['on', 'wait', 'err'].includes(m.state) ? m.state : '', String(m.text || '').slice(0, 90));
       } else if (m.type === 'chat' && (m.platform === 'youtube' || m.platform === 'tiktok')) {
         const parts = Array.isArray(m.parts) ? m.parts.slice(0, 80).map(p => p && p.t === 'img' ? { t: 'img', src: String(p.src || ''), alt: String(p.alt || '') } : { t: 'text', v: String((p && p.v) || '') }) : null;
-        addMessage({ platform: m.platform, kind: String(m.kind || 'chat'), name: String(m.name || 'viewer').slice(0, 60), text: String(m.text || '').slice(0, 500), parts, badges: Array.isArray(m.badges) ? m.badges.map(String) : [], avatar: m.avatar ? String(m.avatar) : null, image: m.image ? String(m.image) : null, amount: m.amount ? String(m.amount) : null });
+        addMessage({ platform: m.platform, kind: String(m.kind || 'chat'), name: String(m.name || 'viewer').slice(0, 60), text: String(m.text || '').slice(0, 500), parts, badges: Array.isArray(m.badges) ? m.badges.map(String) : [], badgeImgs: Array.isArray(m.badgeImgs) ? m.badgeImgs.slice(0, 6).map(x => ({ src: String((x && x.src) || ''), title: String((x && x.title) || '') })) : [], avatar: m.avatar ? String(m.avatar) : null, image: m.image ? String(m.image) : null, amount: m.amount ? String(m.amount) : null });
       }
     };
     srv.onclose = () => {
