@@ -165,7 +165,41 @@ summary.hint { cursor: pointer; }
 details.card { gap: 8px; }
 details.card[open] > summary { margin-bottom: 2px; }
 
-body.obs #panel, body.clean #panel { display: none; }
+body.obs #panel, body.clean #panel, body.popout #panel { display: none; }
+#popHead, #newMsgs, #toast { display: none; }
+
+/* ---------- pop-out chat (YouTube pop-out style) ---------- */
+body.popout { background: #0f0f0f !important; flex-direction: column; color: #f1f1f1; }
+body.popout #showPanel, body.popout #empty { display: none !important; }
+body.popout #popHead { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: #212121; border-bottom: 1px solid #303030; flex: none; font: 600 15px/1.2 var(--ui); }
+#popHead .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+#popHead .chip { font: 600 12px/1 var(--ui); color: #f1f1f1; text-shadow: none; background: #303030; border: 1px solid #3f3f3f; border-radius: 99px; padding: 6px 10px; box-shadow: none; display: inline-flex; align-items: center; gap: 6px; }
+#popHead .chip .d { width: 8px; height: 8px; border-radius: 50%; background: #717171; }
+#popHead .chip .d.on { background: #2ba640; } #popHead .chip .d.wait { background: #f6c945; } #popHead .chip .d.err { background: #e53935; }
+#popHead .chip.off { opacity: .45; text-decoration: line-through; }
+body.popout #chat { display: block; flex: 1; height: auto; min-height: 0; overflow-y: auto; padding-block: 8px; padding-left: 0; padding-right: 0; }
+body.popout #lines { font: 13px/1.5 var(--ui); gap: 0; color: #f1f1f1; text-shadow: none; -webkit-text-stroke: 0; }
+body.popout .msg { display: block; padding: 4px max(16px, env(safe-area-inset-right, 0px)) 4px max(16px, env(safe-area-inset-left, 0px)); width: auto; background: none !important; border-radius: 0; animation: none !important; user-select: text; }
+body.popout .msg:hover { background: rgba(255,255,255,.06) !important; }
+body.popout .msg.event { border-left: 4px solid var(--ev); background: color-mix(in srgb, var(--ev) 14%, transparent) !important; margin-block: 2px; }
+body.popout .msg .text { display: inline; margin: 0; font-style: normal; white-space: pre-wrap; }
+body.popout .name { font-weight: 500; margin-right: 8px; cursor: pointer; text-transform: none; }
+body.popout .name::after { content: none; }
+body.popout .name:hover { text-decoration: underline; }
+body.popout .avatar { width: 24px; height: 24px; vertical-align: middle; margin-right: 12px; }
+body.popout .icon { width: 16px; height: 16px; vertical-align: -3px; margin-right: 8px; }
+body.popout .bicon, body.popout .bimg { width: 16px; height: 16px; min-width: 16px; vertical-align: -3px; margin-right: 4px; }
+body.popout .badge { font-size: 10px; vertical-align: 1px; }
+body.popout .emote { height: 24px; vertical-align: middle; }
+body.popout .gift-img { height: 28px; vertical-align: middle; }
+body.popout .amount { font-size: 12px; vertical-align: 0; margin: 0 8px 0 0; background: rgba(255,255,255,.14); }
+.time { display: none; }
+body.popout .time { display: inline; color: #aaa; font-size: 11px; margin-right: 8px; font-variant-numeric: tabular-nums; }
+body.popout.no-time .time { display: none; }
+body.popout #newMsgs { display: block; position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); font: 600 13px var(--ui); text-shadow: none; background: #3ea6ff; color: #0f0f0f; border: 0; border-radius: 99px; padding: 8px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+body.popout #newMsgs[hidden] { display: none; }
+body.popout #toast { display: block; position: fixed; left: 50%; top: 60px; transform: translateX(-50%); background: #f1f1f1; color: #0f0f0f; font: 600 13px var(--ui); padding: 8px 14px; border-radius: 6px; pointer-events: none; opacity: 0; transition: opacity .2s; }
+body.popout #toast.show { opacity: 1; }
 body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 
 @media (max-width: 700px) {
@@ -177,10 +211,21 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 </head>
 <body>
 
+<header id="popHead">
+  <span>Live chat</span>
+  <div class="chips">
+    <button class="chip" type="button" data-filter="twitch" title="Show or hide Twitch"><span class="d" id="pTw"></span>Twitch</button>
+    <button class="chip" type="button" data-filter="youtube" title="Show or hide YouTube"><span class="d" id="pYt"></span>YouTube</button>
+    <button class="chip" type="button" data-filter="tiktok" title="Show or hide TikTok"><span class="d" id="pTt"></span>TikTok</button>
+    <button class="chip" type="button" id="timeChip" title="Show or hide times">Times</button>
+  </div>
+</header>
 <main id="chat" aria-label="Chat" aria-live="polite">
   <div id="empty">Connect Twitch, YouTube or TikTok in the panel.<br>Everyone's chat shows up here in one box.</div>
   <div id="lines"></div>
   <button id="showPanel" type="button">Show panel</button>
+  <button id="newMsgs" type="button" hidden>↓ New messages</button>
+  <div id="toast" role="status"></div>
 </main>
 
 <aside id="panel">
@@ -296,6 +341,13 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   </section>
 
   <section class="sec">
+    <h2>Pop-out chat</h2>
+    <p class="hint">A YouTube-style chat window with all three platforms, for reading chat while you stream. Scroll back through messages, select text, and double-click a name to copy it.</p>
+    <button id="openPop" class="go" type="button">Open pop-out chat</button>
+    <p class="hint">If it doesn't open, use this link: <a id="popLink" href="?popout" target="_blank" rel="noopener">pop-out chat</a></p>
+  </section>
+
+  <section class="sec">
     <h2>OBS</h2>
     <p class="hint">Add a <b>Browser</b> source in OBS (width 600, height 800 works well) and paste this link. It has your settings built in, a see-through background, and no panel. Copy it again after you change settings.</p>
     <div id="obsLink"></div>
@@ -318,6 +370,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   const lines = $('lines');
   const params = new URLSearchParams(location.search);
   const OBS = params.has('obs');
+  const POP = params.has('popout') && !OBS;
 
   // ---------- settings: from the link (OBS) or this browser ----------
   const KEY = 'lethal-chat-v3';
@@ -334,7 +387,7 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
       S[k] = typeof d === 'number' ? (+v || d) : typeof d === 'boolean' ? v !== '0' : v;
     });
   }
-  function save() { if (OBS) return; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} updateObsLink(); }
+  function save() { if (OBS || POP) return; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} updateObsLink(); }
 
   const FONTS = { mc: 'var(--mc)', ui: 'var(--ui)', mono: '"Courier New", Courier, monospace' };
   const hex = c => /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : null;
@@ -382,6 +435,12 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
 
   // ---------- panel ----------
   if (OBS) document.body.classList.add('obs');
+  if (POP) {
+    document.title = 'Live chat · Lethal Chat';
+    document.body.classList.add('popout');
+    LINK_KEYS.forEach(k => { if (params.has(k)) { const v = params.get(k), d = DEFAULTS[k]; S[k] = typeof d === 'number' ? (+v || d) : typeof d === 'boolean' ? v !== '0' : v; } });
+    Object.assign(S, { theme: 'popout', font: 'ui', anim: 'none', hide: 0, max: 500, align: 'left', events: true, avatars: true, emotes: true, badges: true, badgeText: false, icons: true });
+  }
   $('hideBtn').onclick = () => document.body.classList.add('clean');
   $('showPanel').onclick = () => document.body.classList.remove('clean');
   document.addEventListener('keydown', e => {
@@ -449,10 +508,16 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     const parts = Array.isArray(m.parts) && m.parts.length ? m.parts : [{ t: 'text', v: m.text || '' }];
     if (!parts.some(p => (p.t === 'text' && String(p.v || '').trim()) || p.t === 'img') && kind === 'chat') return;
     $('empty').hidden = true;
+    const box = $('chat');
+    const stick = !POP || box.scrollHeight - box.scrollTop - box.clientHeight < 80;
     const row = document.createElement('div');
+    row.dataset.platform = m.platform;
+    if (POP && hiddenPlat.has(m.platform)) row.hidden = true;
+    const tm = document.createElement('span'); tm.className = 'time';
+    tm.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     row.className = 'msg' + (kind !== 'chat' ? ' event kind-' + kind : '') + (S.anim !== 'none' ? ' in-' + S.anim : '');
     const icon = document.createElement('span'); icon.className = 'icon ' + m.platform; icon.innerHTML = SVG[m.platform] || SVG.test; icon.title = m.platform;
-    row.appendChild(icon);
+    row.append(tm, icon);
     const av = m.avatar && safeSrc(m.avatar);
     if (av) { const img = document.createElement('img'); img.className = 'avatar'; img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = av; img.onerror = () => img.remove(); row.appendChild(img); }
     const badges = Array.isArray(m.badges) ? m.badges.filter(b => BADGE_LABEL[b]) : [];
@@ -487,12 +552,45 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     if (m.image && safeSrc(m.image)) { const gi = document.createElement('img'); gi.className = 'gift-img'; gi.alt = ''; gi.referrerPolicy = 'no-referrer'; gi.src = safeSrc(m.image); gi.onerror = () => gi.remove(); text.appendChild(gi); }
     row.append(name, text);
     if (m.amount) { const am = document.createElement('span'); am.className = 'amount'; am.textContent = String(m.amount).slice(0, 30); name.after(am); }
+    if (POP) { name.title = 'Double-click to copy'; name.addEventListener('dblclick', e => { e.preventDefault(); getSelection().removeAllRanges(); copyName(name.textContent); }); }
     lines.appendChild(row); trim();
+    if (POP) { if (stick) box.scrollTop = box.scrollHeight; else $('newMsgs').hidden = false; }
     if (S.hide > 0) setTimeout(() => { row.classList.add('leaving'); setTimeout(() => row.remove(), 500); }, S.hide * 1000);
   }
 
-  function setStatus(p, state, text) { $(p + 'Dot').className = 'dot' + (state ? ' ' + state : ''); $(p + 'Status').textContent = text; }
+  function setStatus(p, state, text) {
+    const pd = { tw: 'pTw', yt: 'pYt', tt: 'pTt' }[p];
+    if (pd && $(pd)) { $(pd).className = 'd' + (state ? ' ' + state : ''); $(pd).parentElement.title = text; } $(p + 'Dot').className = 'dot' + (state ? ' ' + state : ''); $(p + 'Status').textContent = text; }
   function setBtn(p, on) { $(p + 'Btn').textContent = on ? 'Disconnect' : 'Connect'; $(p + 'Btn').className = 'sm ' + (on ? 'stop' : 'go'); }
+
+  // ---------- pop-out chat helpers ----------
+  const hiddenPlat = new Set();
+  let toastTimer;
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1400); }
+  function copyName(n) {
+    const done = () => toast('Copied ' + n);
+    const fallback = () => { const ta = document.createElement('textarea'); ta.value = n; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { toast('Select the name to copy it'); } ta.remove(); };
+    if (navigator.clipboard) navigator.clipboard.writeText(n).then(done, fallback); else fallback();
+  }
+  document.querySelectorAll('[data-filter]').forEach(c => c.onclick = () => {
+    const pl = c.dataset.filter;
+    if (hiddenPlat.has(pl)) hiddenPlat.delete(pl); else hiddenPlat.add(pl);
+    c.classList.toggle('off', hiddenPlat.has(pl));
+    lines.querySelectorAll('.msg[data-platform="' + pl + '"]').forEach(r => r.hidden = hiddenPlat.has(pl));
+  });
+  $('timeChip').onclick = () => { document.body.classList.toggle('no-time'); $('timeChip').classList.toggle('off', document.body.classList.contains('no-time')); };
+  $('chat').addEventListener('scroll', () => { const b = $('chat'); if (b.scrollHeight - b.scrollTop - b.clientHeight < 80) $('newMsgs').hidden = true; });
+  $('newMsgs').onclick = () => { const b = $('chat'); b.scrollTop = b.scrollHeight; $('newMsgs').hidden = true; };
+  function popUrl() {
+    const base = location.href.split('?')[0].split('#')[0];
+    const parts = ['popout'];
+    ['twitch', 'youtube', 'tiktok', 'server'].forEach(k => { if (S[k] && S[k] !== DEFAULTS[k]) parts.push(k + '=' + encodeURIComponent(S[k])); });
+    return base + '?' + parts.join('&');
+  }
+  $('openPop').onclick = () => {
+    const w = window.open(popUrl(), 'lethalchatpop', 'width=420,height=720');
+    if (!w) { $('popLink').href = popUrl(); toast('Your browser blocked the window. Use the link below.'); }
+  };
 
   // ---------- Twitch badge pictures (fetched through the chat server) ----------
   let twBadgeMap = {}, twBadgeRoom = null;
@@ -663,7 +761,9 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
   $('srvUrl').addEventListener('change', e => { S.server = e.target.value.trim(); save(); });
   if (S.server) $('srvState').textContent = '(set up)';
   applyLook(); updateObsLink();
-  if (OBS) { if (S.twitch) twConnect(); if ((S.youtube || S.tiktok) && S.server) srvConnect(); }
+  $('popLink').href = popUrl();
+  if (POP) { if (S.twitch) twConnect(); if ((S.youtube || S.tiktok) && S.server) srvConnect(); if (!S.twitch && !S.youtube && !S.tiktok) toast('Connect your channels on the main page first'); }
+  else if (OBS) { if (S.twitch) twConnect(); if ((S.youtube || S.tiktok) && S.server) srvConnect(); }
   else if (!S.twitch && !S.youtube && !S.tiktok) EXAMPLE.forEach(m => addMessage(Object.assign({}, m)));
 })();
 </script>
