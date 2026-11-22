@@ -578,7 +578,15 @@ body:not(.clean) #showPanel, body.obs #showPanel { display: none; }
     c.classList.toggle('off', hiddenPlat.has(pl));
     lines.querySelectorAll('.msg[data-platform="' + pl + '"]').forEach(r => r.hidden = hiddenPlat.has(pl));
   });
-  $('timeChip').onclick = () => { document.body.classList.toggle('no-time'); $('timeChip').classList.toggle('off', document.body.classList.contains('no-time')); };
+  const setTimes = (on, remember) => {
+    document.body.classList.toggle('no-time', !on);
+    $('timeChip').classList.toggle('off', !on);
+    $('timeChip').setAttribute('aria-pressed', String(on));
+    $('timeChip').title = on ? 'Hide times' : 'Show times';
+    if (remember) { try { localStorage.setItem('lethal-chat-pop-times', on ? '1' : '0'); } catch (e) {} }
+  };
+  $('timeChip').onclick = () => setTimes(document.body.classList.contains('no-time'), true);
+  (() => { let v = null; try { v = localStorage.getItem('lethal-chat-pop-times'); } catch (e) {} if (params.has('times')) v = params.get('times'); setTimes(v !== '0', false); })();
   $('chat').addEventListener('scroll', () => { const b = $('chat'); if (b.scrollHeight - b.scrollTop - b.clientHeight < 80) $('newMsgs').hidden = true; });
   $('newMsgs').onclick = () => { const b = $('chat'); b.scrollTop = b.scrollHeight; $('newMsgs').hidden = true; };
   function popUrl() {
