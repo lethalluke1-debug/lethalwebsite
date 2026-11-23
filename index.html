@@ -210,6 +210,19 @@ body.popout .name { margin-right: 6px; }
 body.popout.can-install #popHead #installBtn { display: inline-flex; background: #3ea6ff; color: #0f0f0f; border-color: #3ea6ff; }
 #popHead > span { white-space: nowrap; }
 body.popout.pop-light .name { filter: brightness(.68) saturate(1.5); }
+/* installed app with the title bar hidden: the chat header becomes the title bar */
+@media (display-mode: window-controls-overlay) {
+  body.popout #popHead {
+    position: fixed; top: env(titlebar-area-y, 0); left: env(titlebar-area-x, 0);
+    width: env(titlebar-area-width, 100%); height: env(titlebar-area-height, 33px);
+    padding-block: 0; padding-left: 12px; padding-right: 8px;
+    -webkit-app-region: drag; app-region: drag; border-bottom: 0; overflow: hidden;
+  }
+  body.popout #popHead > span { font-size: 13px; }
+  body.popout #popHead .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  body.popout #popHead .chip { -webkit-app-region: no-drag; app-region: no-drag; padding: 4px 8px; font-size: 11px; }
+  body.popout #chat { margin-top: env(titlebar-area-height, 33px); }
+}
 body.popout.pop-light { background: #fff !important; color: #0e0e10; }
 body.popout.pop-light #popHead { background: #f7f7f8; border-bottom-color: #e5e5e8; color: #0e0e10; }
 body.popout.pop-light #popHead .chip { background: #fff; border-color: #dcdce0; color: #0e0e10; }
